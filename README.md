@@ -30,3 +30,8 @@ Fase 2/
 
 Fase 3/
 └── Pendiente
+```
+
+## Frontend
+
+Este repositorio incluye una implementación inicial del frontend en React + Vite para el panel de gestión de inventario.
