@@ -20,6 +20,7 @@ Este repositorio contiene las evidencias académicas y, posteriormente, los docu
 
 ## Estructura
 
+```text
 Fase 1/
 ├── Evidencias Individuales/
 └── Evidencias Grupales/
