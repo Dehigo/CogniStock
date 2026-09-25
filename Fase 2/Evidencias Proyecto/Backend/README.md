@@ -73,12 +73,16 @@ pyenv virtualenv 3.10 venv-django
 pyenv local venv
 ```
 
-Crea tus Variables de Entorno
-
 ### Crea tus Variables de Entorno
 
 ```
-
+DEBUG=True
+SECRET_KEY=
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
+DB_PORT=
 ```
 
 ### 3. Instalar dependencias de Python
