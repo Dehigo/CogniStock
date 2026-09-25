@@ -23,38 +23,6 @@ Asegúrate de tener instalados los siguientes componentes en tu sistema:
 git clone https://github.com/Dehigo/CogniStock/
 cd CogniStock
 ```
-
-### 2. Configurar Python 3.10 con pyenv
- Conversation with Gemini
-
-Creame un reade.md para un proyecto de django con pyenv 3.10 venv postgre en docker
-Markdown
-
-# Django Project
-
-Este es un proyecto de Django configurado con un entorno virtual basado en Python 3.10 via `pyenv` y una base de datos PostgreSQL ejecutándose en un contenedor Docker.
-
----
-
-## Requisitos Previos
-
-Asegúrate de tener instalados los siguientes componentes en tu sistema:
-
-* [pyenv](https://github.com/pyenv/pyenv)
-* [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) (opcional, si prefieres gestionar entornos virtuales directamente con pyenv)
-* [Docker](https://www.docker.com/) y [Docker Compose](https://docs.docker.com/compose/)
-* [Git](https://git-scm.com/)
-
----
-
-## Configuración del Entorno de Desarrollo
-
-### 1. Clonar el Repositorio
-
-```bash
-git clone https://github.com/Dehigo/CogniStock/
-cd CogniStock
-```
 ### 2. Configurar Python 3.10 con pyenv
 
 Instala Python 3.10 si aún no lo tienes instalado:
