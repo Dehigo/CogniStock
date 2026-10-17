@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import AlertasStock from './alertas/AlertasStock';
 import Bitacora from './bitacora/Bitacora';
 import Categorias from './categorias/Categorias';
+import Parametros from './parametros/Parametros';
 import Productos from './productos/Productos';
 import Proveedores from './proveedores/Proveedores';
 import { SECCION_INICIAL, SECCIONES } from './secciones';
@@ -17,6 +18,7 @@ const PANTALLAS = {
   proveedores: Proveedores,
   bitacora: Bitacora,
   alertas: AlertasStock,
+  parametros: Parametros,
 };
 
 function seccionDesdeUrl() {

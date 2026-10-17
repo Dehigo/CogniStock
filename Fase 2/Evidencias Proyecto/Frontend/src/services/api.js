@@ -114,3 +114,19 @@ export function desactivarProveedor(token, id) {
 export function listarBitacora(token, filtros = {}) {
   return pedir(`/bitacora/?${armarFiltros(filtros)}`, { token });
 }
+
+export function listarParametros(token) {
+  return pedir('/parametros/', { token });
+}
+
+export function crearParametro(token, datos) {
+  return pedir('/parametros/', { method: 'POST', token, body: JSON.stringify(datos) });
+}
+
+export function editarParametro(token, id, datos) {
+  return pedir(`/parametros/${id}/`, { method: 'PATCH', token, body: JSON.stringify(datos) });
+}
+
+export function eliminarParametro(token, id) {
+  return pedir(`/parametros/${id}/`, { method: 'DELETE', token });
+}

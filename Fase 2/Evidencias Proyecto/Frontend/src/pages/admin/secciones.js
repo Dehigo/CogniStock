@@ -47,8 +47,6 @@ export const SECCIONES = [
     id: 'parametros',
     grupo: 'Administración',
     titulo: 'Parámetros',
-    descripcion: 'Configuración general del sistema, como umbrales de alerta y días de cobertura.',
-    requisito: 'RF-02',
   },
 ];
 

@@ -10,6 +10,7 @@ router.register("categorias", views.CategoriaViewSet, basename="categoria")
 router.register("productos", views.ProductoViewSet, basename="producto")
 router.register("proveedores", views.ProveedorViewSet, basename="proveedor")
 router.register("bitacora", views.BitacoraViewSet, basename="bitacora")
+router.register("parametros", views.ParametroViewSet, basename="parametro")
 
 urlpatterns = [
     path("health/", views.health_check, name="health-check"),

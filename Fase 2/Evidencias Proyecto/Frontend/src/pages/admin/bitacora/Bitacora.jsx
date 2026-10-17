@@ -7,6 +7,7 @@ const SECCIONES = [
   { valor: 'productos', nombre: 'Productos' },
   { valor: 'categorias', nombre: 'Categorías' },
   { valor: 'proveedores', nombre: 'Proveedores' },
+  { valor: 'parametros', nombre: 'Parámetros' },
 ];
 
 function formatearFecha(fecha) {
