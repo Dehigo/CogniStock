@@ -32,8 +32,6 @@ export const SECCIONES = [
     id: 'alertas',
     grupo: 'Inventario',
     titulo: 'Alertas de stock',
-    descripcion: 'Productos bajo el stock mínimo o agotados, y recomendaciones de reposición del agente de IA.',
-    requisito: 'RF-07 / RF-11',
   },
   {
     id: 'usuarios',

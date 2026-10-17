@@ -1,5 +1,5 @@
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import F, Q
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
@@ -59,6 +59,9 @@ class ProductoViewSet(viewsets.ModelViewSet):
         activo = parametros.get("activo")
         if activo in ("true", "false"):
             productos = productos.filter(activo=activo == "true")
+
+        if parametros.get("stock_bajo") == "true":
+            productos = productos.filter(stock__cantidad__lt=F("stock_minimo"))
 
         return productos
 
