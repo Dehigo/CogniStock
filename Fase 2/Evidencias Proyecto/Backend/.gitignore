@@ -25,6 +25,7 @@ db.sqlite3-journal
 # ==========================================
 .env
 .env.[a-zA-Z]*
+!.env.example
 env/
 venv/
 .venv/
