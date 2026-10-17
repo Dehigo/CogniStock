@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
+import PanelAdmin from './admin/PanelAdmin';
 import { cerrarSesion, obtenerUsuario } from './api';
 import Login from './Login';
 import './Login.css';
+
+const ROL_ADMINISTRADOR = 'Administrador';
 
 function App() {
   const [token, setToken] = useState(() => localStorage.getItem('token'));
@@ -32,6 +35,10 @@ function App() {
       setToken(null);
       setUsuario(null);
     }
+  }
+
+  if (usuario?.rol === ROL_ADMINISTRADOR) {
+    return <PanelAdmin token={token} usuario={usuario} onLogout={handleLogout} />;
   }
 
   return (

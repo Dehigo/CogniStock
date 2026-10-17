@@ -37,3 +37,26 @@ export function obtenerUsuario(token) {
 export function cerrarSesion(token) {
   return pedir('/auth/logout/', { method: 'POST', token });
 }
+
+export function listarUsuarios(token, filtros = {}) {
+  const parametros = new URLSearchParams(
+    Object.entries(filtros).filter(([, valor]) => valor !== '' && valor != null),
+  );
+  return pedir(`/usuarios/?${parametros}`, { token });
+}
+
+export function crearUsuario(token, datos) {
+  return pedir('/usuarios/', { method: 'POST', token, body: JSON.stringify(datos) });
+}
+
+export function editarUsuario(token, id, datos) {
+  return pedir(`/usuarios/${id}/`, { method: 'PATCH', token, body: JSON.stringify(datos) });
+}
+
+export function desactivarUsuario(token, id) {
+  return pedir(`/usuarios/${id}/`, { method: 'DELETE', token });
+}
+
+export function listarRoles(token) {
+  return pedir('/roles/', { token });
+}

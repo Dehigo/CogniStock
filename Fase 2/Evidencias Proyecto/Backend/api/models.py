@@ -8,6 +8,8 @@ from django.utils import timezone
 # Seguridad y administración
 
 class Rol(models.Model):
+    ADMINISTRADOR = "Administrador"
+
     nombre = models.CharField(max_length=50, unique=True)
     descripcion = models.CharField(max_length=255, blank=True)
     permisos = models.ManyToManyField("Permiso", through="RolPermiso", related_name="roles")
@@ -43,7 +45,7 @@ class UsuarioManager(BaseUserManager):
         extra_fields["is_staff"] = True
         extra_fields["is_superuser"] = True
         if "rol" not in extra_fields and "rol_id" not in extra_fields:
-            extra_fields["rol"], _ = Rol.objects.get_or_create(nombre="Administrador")
+            extra_fields["rol"], _ = Rol.objects.get_or_create(nombre=Rol.ADMINISTRADOR)
         return self._create_user(email, password, **extra_fields)
 
 
