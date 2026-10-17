@@ -1,38 +1,59 @@
 import { useEffect, useState } from 'react';
+import { cerrarSesion, obtenerUsuario } from './api';
+import Login from './Login';
+import './Login.css';
 
 function App() {
-  const [estado, setEstado] = useState('Comprobando conexión...');
-  const [error, setError] = useState('');
+  const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const [usuario, setUsuario] = useState(null);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/health/')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setEstado(data.status);
-      })
-      .catch((error) => {
-        setEstado('Error');
-        setError(error.message);
+    if (!token || usuario) return;
+
+    obtenerUsuario(token)
+      .then(setUsuario)
+      .catch(() => {
+        localStorage.removeItem('token');
+        setToken(null);
       });
-  }, []);
+  }, [token, usuario]);
+
+  function handleLogin(nuevoToken, datosUsuario) {
+    localStorage.setItem('token', nuevoToken);
+    setToken(nuevoToken);
+    setUsuario(datosUsuario);
+  }
+
+  async function handleLogout() {
+    try {
+      await cerrarSesion(token);
+    } finally {
+      localStorage.removeItem('token');
+      setToken(null);
+      setUsuario(null);
+    }
+  }
 
   return (
-    <div>
-      <h1>CogniStock</h1>
+    <main className="contenedor">
+      {!token && <Login onLogin={handleLogin} />}
 
-      <h2>Conexión con Backend</h2>
+      {token && !usuario && <p>Cargando...</p>}
 
-      <p>
-        Estado del backend: <strong>{estado}</strong>
-      </p>
-
-      {error && <p>{error}</p>}
-    </div>
+      {usuario && (
+        <section className="tarjeta">
+          <h1>Hola, {usuario.nombre}</h1>
+          <p className="subtitulo">Sesión iniciada correctamente</p>
+          <dl>
+            <dt>Email</dt>
+            <dd>{usuario.email}</dd>
+            <dt>Rol</dt>
+            <dd>{usuario.rol}</dd>
+          </dl>
+          <button onClick={handleLogout}>Cerrar sesión</button>
+        </section>
+      )}
+    </main>
   );
 }
 
