@@ -110,3 +110,7 @@ export function editarProveedor(token, id, datos) {
 export function desactivarProveedor(token, id) {
   return pedir(`/proveedores/${id}/`, { method: 'DELETE', token });
 }
+
+export function listarBitacora(token, filtros = {}) {
+  return pedir(`/bitacora/?${armarFiltros(filtros)}`, { token });
+}

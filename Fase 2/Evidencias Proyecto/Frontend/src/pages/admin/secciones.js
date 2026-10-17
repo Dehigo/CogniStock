@@ -44,8 +44,6 @@ export const SECCIONES = [
     id: 'bitacora',
     grupo: 'Administración',
     titulo: 'Bitácora',
-    descripcion: 'Registro de inicios de sesión y de los cambios hechos por cada usuario.',
-    requisito: 'RNF-03',
   },
   {
     id: 'parametros',
