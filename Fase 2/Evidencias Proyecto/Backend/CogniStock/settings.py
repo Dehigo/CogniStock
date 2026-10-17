@@ -81,6 +81,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'CogniStock.wsgi.application'
 
+AUTH_USER_MODEL = 'api.Usuario'
+
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
