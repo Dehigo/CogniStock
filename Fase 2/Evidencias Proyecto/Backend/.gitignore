@@ -86,3 +86,5 @@ coverage.xml
 .DS_Store?
 ehthumbs.db
 Thumbs.db
+respaldo.sql
+*.sql
