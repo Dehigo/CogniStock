@@ -3,8 +3,11 @@ export const SECCIONES = [
     id: 'productos',
     grupo: 'Inventario',
     titulo: 'Productos',
-    descripcion: 'Catálogo de productos y categorías, con su código QR, stock mínimo y stock actual.',
-    requisito: 'RF-03',
+  },
+  {
+    id: 'categorias',
+    grupo: 'Inventario',
+    titulo: 'Categorías',
   },
   {
     id: 'proveedores',

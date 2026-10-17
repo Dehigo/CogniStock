@@ -26,6 +26,11 @@ async function pedir(ruta, { token, ...opciones } = {}) {
   return datos;
 }
 
+function armarFiltros(filtros) {
+  const conValor = Object.entries(filtros).filter(([, valor]) => valor !== '' && valor != null);
+  return new URLSearchParams(conValor);
+}
+
 export function iniciarSesion(email, password) {
   return pedir('/auth/login/', { method: 'POST', body: JSON.stringify({ email, password }) });
 }
@@ -39,10 +44,7 @@ export function cerrarSesion(token) {
 }
 
 export function listarUsuarios(token, filtros = {}) {
-  const parametros = new URLSearchParams(
-    Object.entries(filtros).filter(([, valor]) => valor !== '' && valor != null),
-  );
-  return pedir(`/usuarios/?${parametros}`, { token });
+  return pedir(`/usuarios/?${armarFiltros(filtros)}`, { token });
 }
 
 export function crearUsuario(token, datos) {
@@ -59,4 +61,36 @@ export function desactivarUsuario(token, id) {
 
 export function listarRoles(token) {
   return pedir('/roles/', { token });
+}
+
+export function listarCategorias(token, filtros = {}) {
+  return pedir(`/categorias/?${armarFiltros(filtros)}`, { token });
+}
+
+export function crearCategoria(token, datos) {
+  return pedir('/categorias/', { method: 'POST', token, body: JSON.stringify(datos) });
+}
+
+export function editarCategoria(token, id, datos) {
+  return pedir(`/categorias/${id}/`, { method: 'PATCH', token, body: JSON.stringify(datos) });
+}
+
+export function desactivarCategoria(token, id) {
+  return pedir(`/categorias/${id}/`, { method: 'DELETE', token });
+}
+
+export function listarProductos(token, filtros = {}) {
+  return pedir(`/productos/?${armarFiltros(filtros)}`, { token });
+}
+
+export function crearProducto(token, datos) {
+  return pedir('/productos/', { method: 'POST', token, body: JSON.stringify(datos) });
+}
+
+export function editarProducto(token, id, datos) {
+  return pedir(`/productos/${id}/`, { method: 'PATCH', token, body: JSON.stringify(datos) });
+}
+
+export function desactivarProducto(token, id) {
+  return pedir(`/productos/${id}/`, { method: 'DELETE', token });
 }

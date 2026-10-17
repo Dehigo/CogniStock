@@ -1,3 +1,5 @@
+import secrets
+
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
@@ -9,6 +11,7 @@ from django.utils import timezone
 
 class Rol(models.Model):
     ADMINISTRADOR = "Administrador"
+    ENCARGADO = "Encargado de inventario"
 
     nombre = models.CharField(max_length=50, unique=True)
     descripcion = models.CharField(max_length=255, blank=True)
@@ -165,8 +168,8 @@ class Producto(models.Model):
         related_name="productos",
     )
     unidad_medida = models.CharField(max_length=30, default="unidad")
-    precio_referencia = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    stock_minimo = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    precio_referencia = models.IntegerField(default=0)
+    stock_minimo = models.IntegerField(default=0)
     activo = models.BooleanField(default=True)
     creado_en = models.DateTimeField(auto_now_add=True)
 
@@ -179,6 +182,12 @@ class Producto(models.Model):
 
     def __str__(self):
         return f"{self.codigo} - {self.nombre}"
+
+    def save(self, *args, **kwargs):
+        # Si el producto no trae código de barras propio, se le asigna uno interno para imprimir su etiqueta.
+        if not self.codigo_qr:
+            self.codigo_qr = f"CS-{secrets.token_hex(4).upper()}"
+        super().save(*args, **kwargs)
 
 
 class DatoProductoExterno(models.Model):
@@ -280,7 +289,7 @@ class Cotizacion(models.Model):
 class DetalleCotizacion(models.Model):
     cotizacion = models.ForeignKey(Cotizacion, on_delete=models.CASCADE, related_name="detalles")
     producto = models.ForeignKey(Producto, on_delete=models.PROTECT, related_name="detalles_cotizacion")
-    cantidad = models.DecimalField(max_digits=12, decimal_places=2)
+    cantidad = models.IntegerField()
     precio_unitario = models.DecimalField(max_digits=12, decimal_places=2)
 
     class Meta:
@@ -320,7 +329,7 @@ class Stock(models.Model):
         primary_key=True,
         related_name="stock",
     )
-    cantidad = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    cantidad = models.IntegerField(default=0)
     actualizado_en = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -343,7 +352,7 @@ class Entrada(models.Model):
 class DetalleEntrada(models.Model):
     entrada = models.ForeignKey(Entrada, on_delete=models.CASCADE, related_name="detalles")
     producto = models.ForeignKey(Producto, on_delete=models.PROTECT, related_name="detalles_entrada")
-    cantidad = models.DecimalField(max_digits=12, decimal_places=2)
+    cantidad = models.IntegerField()
 
     class Meta:
         db_table = "detalle_entrada"
@@ -364,7 +373,7 @@ class Salida(models.Model):
 class DetalleSalida(models.Model):
     salida = models.ForeignKey(Salida, on_delete=models.CASCADE, related_name="detalles")
     producto = models.ForeignKey(Producto, on_delete=models.PROTECT, related_name="detalles_salida")
-    cantidad = models.DecimalField(max_digits=12, decimal_places=2)
+    cantidad = models.IntegerField()
     codigo_qr = models.CharField(max_length=255, blank=True)
 
     class Meta:
@@ -382,7 +391,7 @@ class Movimiento(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.PROTECT, related_name="movimientos")
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="movimientos")
     tipo = models.CharField(max_length=20, choices=Tipo.choices)
-    cantidad = models.DecimalField(max_digits=12, decimal_places=2)
+    cantidad = models.IntegerField()
     entrada = models.ForeignKey(
         Entrada,
         on_delete=models.PROTECT,
@@ -463,7 +472,7 @@ class AlertaStock(models.Model):
 
     producto = models.ForeignKey(Producto, on_delete=models.PROTECT, related_name="alertas")
     tipo = models.CharField(max_length=20, choices=Tipo.choices)
-    cantidad_al_generar = models.DecimalField(max_digits=12, decimal_places=2)
+    cantidad_al_generar = models.IntegerField()
     estado = models.CharField(max_length=20, choices=Estado.choices, default=Estado.ACTIVA)
     atendida_por = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -609,7 +618,7 @@ class RecomendacionReposicion(models.Model):
         blank=True,
         related_name="recomendaciones",
     )
-    cantidad_sugerida = models.DecimalField(max_digits=12, decimal_places=2)
+    cantidad_sugerida = models.IntegerField()
     justificacion = models.TextField()
     estado = models.CharField(max_length=20, choices=Estado.choices, default=Estado.PROPUESTA)
     conversacion = models.ForeignKey(

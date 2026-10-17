@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
+from django.db import transaction
 from django.db.models import Q
 from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
@@ -9,9 +10,16 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 
-from api.models import BitacoraAuditoria, Rol, Usuario
-from api.permissions import EsAdministrador
-from api.serializers import LoginSerializer, RolSerializer, UsuarioAdminSerializer, UsuarioSerializer
+from api.models import BitacoraAuditoria, CategoriaProducto, Producto, Rol, Stock, Usuario
+from api.permissions import EsAdministrador, PuedeGestionarInventario
+from api.serializers import (
+    CategoriaSerializer,
+    LoginSerializer,
+    ProductoSerializer,
+    RolSerializer,
+    UsuarioAdminSerializer,
+    UsuarioSerializer,
+)
 
 
 class LoginRateThrottle(AnonRateThrottle):
@@ -152,4 +160,77 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         Token.objects.filter(user=usuario).delete()
         registrar_en_bitacora(request, "USUARIO_DESACTIVADO", request.user, entidad_id=usuario.id)
 
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# Inventario: categorías y productos
+
+class CategoriaViewSet(viewsets.ModelViewSet):
+    serializer_class = CategoriaSerializer
+    permission_classes = [PuedeGestionarInventario]
+    http_method_names = ["get", "post", "patch", "delete"]
+
+    def get_queryset(self):
+        categorias = CategoriaProducto.objects.order_by("nombre")
+
+        activo = self.request.query_params.get("activo")
+        if activo in ("true", "false"):
+            categorias = categorias.filter(activo=activo == "true")
+
+        return categorias
+
+    def perform_create(self, serializer):
+        categoria = serializer.save()
+        registrar_en_bitacora(self.request, "CATEGORIA_CREADA", self.request.user, "categorias", categoria.id)
+
+    def perform_update(self, serializer):
+        categoria = serializer.save()
+        registrar_en_bitacora(self.request, "CATEGORIA_EDITADA", self.request.user, "categorias", categoria.id)
+
+    def destroy(self, request, *args, **kwargs):
+        categoria = self.get_object()
+        categoria.activo = False
+        categoria.save(update_fields=["activo"])
+        registrar_en_bitacora(request, "CATEGORIA_DESACTIVADA", request.user, "categorias", categoria.id)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ProductoViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductoSerializer
+    permission_classes = [PuedeGestionarInventario]
+    http_method_names = ["get", "post", "patch", "delete"]
+
+    def get_queryset(self):
+        productos = Producto.objects.select_related("categoria", "stock").order_by("nombre")
+        parametros = self.request.query_params
+
+        buscar = parametros.get("buscar", "").strip()
+        if buscar:
+            productos = productos.filter(Q(nombre__icontains=buscar) | Q(codigo__icontains=buscar))
+
+        categoria = parametros.get("categoria")
+        if categoria and categoria.isdigit():
+            productos = productos.filter(categoria_id=categoria)
+
+        activo = parametros.get("activo")
+        if activo in ("true", "false"):
+            productos = productos.filter(activo=activo == "true")
+
+        return productos
+
+    @transaction.atomic
+    def perform_create(self, serializer):
+        producto = serializer.save()
+        Stock.objects.create(producto=producto, cantidad=0)
+        registrar_en_bitacora(self.request, "PRODUCTO_CREADO", self.request.user, "productos", producto.id)
+
+    def perform_update(self, serializer):
+        producto = serializer.save()
+        registrar_en_bitacora(self.request, "PRODUCTO_EDITADO", self.request.user, "productos", producto.id)
+
+    def destroy(self, request, *args, **kwargs):
+        producto = self.get_object()
+        producto.activo = False
+        producto.save(update_fields=["activo"])
+        registrar_en_bitacora(request, "PRODUCTO_DESACTIVADO", request.user, "productos", producto.id)
         return Response(status=status.HTTP_204_NO_CONTENT)

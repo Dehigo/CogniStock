@@ -1,9 +1,17 @@
 import { useEffect, useState } from 'react';
+import Categorias from './Categorias';
+import Productos from './Productos';
 import { SECCION_INICIAL, SECCIONES } from './secciones';
 import Usuarios from './Usuarios';
 import './Admin.css';
 
 const GRUPOS = [...new Set(SECCIONES.map((seccion) => seccion.grupo))];
+
+const PANTALLAS = {
+  usuarios: Usuarios,
+  productos: Productos,
+  categorias: Categorias,
+};
 
 function seccionDesdeUrl() {
   const id = window.location.hash.slice(1);
@@ -34,6 +42,7 @@ function PanelAdmin({ token, usuario, onLogout }) {
   }, []);
 
   const seccion = SECCIONES.find((s) => s.id === seccionActiva);
+  const Pantalla = PANTALLAS[seccion.id];
 
   return (
     <div className="panel">
@@ -70,8 +79,8 @@ function PanelAdmin({ token, usuario, onLogout }) {
         </nav>
 
         <main className="panel-contenido">
-          {seccion.id === 'usuarios' ? (
-            <Usuarios token={token} usuarioActual={usuario} />
+          {Pantalla ? (
+            <Pantalla token={token} usuarioActual={usuario} />
           ) : (
             <EnConstruccion seccion={seccion} />
           )}
