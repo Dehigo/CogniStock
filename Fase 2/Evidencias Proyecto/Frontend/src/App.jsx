@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import PanelAdmin from './admin/PanelAdmin';
-import { cerrarSesion, obtenerUsuario } from './api';
-import Login from './Login';
-import './Login.css';
+import PanelAdmin from './pages/admin/PanelAdmin';
+import { cerrarSesion, obtenerUsuario } from './services/api';
+import Login from './pages/Login';
+import './styles/login.css';
 
 const ROL_ADMINISTRADOR = 'Administrador';
 

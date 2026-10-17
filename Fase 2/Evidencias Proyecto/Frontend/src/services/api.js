@@ -94,3 +94,19 @@ export function editarProducto(token, id, datos) {
 export function desactivarProducto(token, id) {
   return pedir(`/productos/${id}/`, { method: 'DELETE', token });
 }
+
+export function listarProveedores(token, filtros = {}) {
+  return pedir(`/proveedores/?${armarFiltros(filtros)}`, { token });
+}
+
+export function crearProveedor(token, datos) {
+  return pedir('/proveedores/', { method: 'POST', token, body: JSON.stringify(datos) });
+}
+
+export function editarProveedor(token, id, datos) {
+  return pedir(`/proveedores/${id}/`, { method: 'PATCH', token, body: JSON.stringify(datos) });
+}
+
+export function desactivarProveedor(token, id) {
+  return pedir(`/proveedores/${id}/`, { method: 'DELETE', token });
+}

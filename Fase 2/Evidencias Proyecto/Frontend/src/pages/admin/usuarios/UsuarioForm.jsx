@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { crearUsuario, editarUsuario } from '../api';
+import { crearUsuario, editarUsuario } from '../../../services/api';
 
 function UsuarioForm({ token, usuario, roles, esUsuarioActual, onGuardar, onCancelar }) {
   const esNuevo = usuario === null;

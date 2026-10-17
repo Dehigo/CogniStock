@@ -13,8 +13,6 @@ export const SECCIONES = [
     id: 'proveedores',
     grupo: 'Inventario',
     titulo: 'Proveedores',
-    descripcion: 'Registro de proveedores y de los productos que ofrece cada uno.',
-    requisito: 'RF-04',
   },
   {
     id: 'cotizaciones',

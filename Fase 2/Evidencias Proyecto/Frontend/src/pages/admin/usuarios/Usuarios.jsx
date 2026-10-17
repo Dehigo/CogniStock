@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { desactivarUsuario, editarUsuario, listarRoles, listarUsuarios } from '../api';
+import { desactivarUsuario, editarUsuario, listarRoles, listarUsuarios } from '../../../services/api';
 import UsuarioForm from './UsuarioForm';
 
 function formatearFecha(fecha) {

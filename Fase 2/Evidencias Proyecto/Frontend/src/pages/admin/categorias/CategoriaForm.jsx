@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { crearCategoria, editarCategoria } from '../api';
+import { crearCategoria, editarCategoria } from '../../../services/api';
 
 function CategoriaForm({ token, categoria, onGuardar, onCancelar }) {
   const esNueva = categoria === null;

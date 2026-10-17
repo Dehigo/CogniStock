@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import Categorias from './Categorias';
-import Productos from './Productos';
+import Categorias from './categorias/Categorias';
+import Productos from './productos/Productos';
+import Proveedores from './proveedores/Proveedores';
 import { SECCION_INICIAL, SECCIONES } from './secciones';
-import Usuarios from './Usuarios';
-import './Admin.css';
+import Usuarios from './usuarios/Usuarios';
+import '../../styles/admin.css';
 
 const GRUPOS = [...new Set(SECCIONES.map((seccion) => seccion.grupo))];
 
@@ -11,6 +12,7 @@ const PANTALLAS = {
   usuarios: Usuarios,
   productos: Productos,
   categorias: Categorias,
+  proveedores: Proveedores,
 };
 
 function seccionDesdeUrl() {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { desactivarCategoria, editarCategoria, listarCategorias } from '../api';
+import { desactivarCategoria, editarCategoria, listarCategorias } from '../../../services/api';
 import CategoriaForm from './CategoriaForm';
 
 function Categorias({ token }) {

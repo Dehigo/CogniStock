@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { crearProducto, editarProducto } from '../api';
+import { crearProducto, editarProducto } from '../../../services/api';
 
 function ProductoForm({ token, producto, categorias, onGuardar, onCancelar }) {
   const esNuevo = producto === null;

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { desactivarProducto, editarProducto, listarCategorias, listarProductos } from '../api';
+import { desactivarProducto, editarProducto, listarCategorias, listarProductos } from '../../../services/api';
 import ProductoForm from './ProductoForm';
 import QrProducto from './QrProducto';
 
