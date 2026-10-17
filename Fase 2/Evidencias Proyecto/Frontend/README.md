@@ -6,15 +6,20 @@ Este documento explica cómo instalar dependencias y levantar la aplicación fro
 
 Asegúrate de tener instalado:
 
-- Node.js 18 o superior
+- Node.js 22 
 - npm (incluido con Node.js)
 - Git
 
-Puedes verificar la versión con:
 
+## Instalar Node JS mediante NVM
+
+Instalar NVM
 ```bash
-node -v
-npm -v
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.8/install.sh | bash
+```
+Instalar Node JS
+```
+nvm install 22.22.1
 ```
 
 ## 1. Entrar al directorio del frontend
