@@ -98,13 +98,37 @@ function Productos({ token }) {
     setStockBajo(false);
   }
 
+  const resumen = {
+    total: productos.length,
+    activos: productos.filter((producto) => producto.activo).length,
+    bajo: productos.filter((producto) => Number(producto.stock_actual ?? 0) < Number(producto.stock_minimo ?? 0)).length,
+  };
+
   return (
     <section>
       <div className="seccion-cabecera">
         <h2>Productos</h2>
         <button className="boton" onClick={() => setFormulario({ producto: null })}>
-          Nuevo producto
+          + Nuevo producto
         </button>
+      </div>
+
+      <div className="resumen-grid" style={{ marginBottom: '18px' }}>
+        <div className="tarjeta-resumen tarjeta-resumen-azul">
+          <span className="tarjeta-resumen-titulo">Total</span>
+          <span className="tarjeta-resumen-numero">{resumen.total}</span>
+          <span className="tarjeta-resumen-subtitulo">Productos registrados</span>
+        </div>
+        <div className="tarjeta-resumen tarjeta-resumen-gris">
+          <span className="tarjeta-resumen-titulo">Activos</span>
+          <span className="tarjeta-resumen-numero">{resumen.activos}</span>
+          <span className="tarjeta-resumen-subtitulo">Disponibles en operación</span>
+        </div>
+        <div className="tarjeta-resumen tarjeta-resumen-gris">
+          <span className="tarjeta-resumen-titulo">Stock bajo</span>
+          <span className="tarjeta-resumen-numero">{resumen.bajo}</span>
+          <span className="tarjeta-resumen-subtitulo">Requieren atención</span>
+        </div>
       </div>
 
       <div className="filtros filtros-acciones">
@@ -198,6 +222,9 @@ function Productos({ token }) {
                     <td className="tabla-acciones">
                       <button className="boton-enlace" onClick={() => setProductoQr(producto)}>
                         QR
+                      </button>
+                      <button className="boton-enlace" onClick={() => window.location.hash = '#salidas'}>
+                        Salida
                       </button>
                       <button className="boton-enlace" onClick={() => setFormulario({ producto })}>
                         Editar

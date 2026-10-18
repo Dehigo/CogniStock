@@ -83,6 +83,14 @@ export function listarProductos(token, filtros = {}) {
   return pedir(`/productos/?${armarFiltros(filtros)}`, { token });
 }
 
+export function buscarProductoPorQr(token, codigoQr) {
+  return pedir(`/productos/qr/?codigo_qr=${encodeURIComponent(codigoQr)}`, { token });
+}
+
+export function registrarSalidaQr(token, datos) {
+  return pedir('/salidas/', { method: 'POST', token, body: JSON.stringify(datos) });
+}
+
 export function crearProducto(token, datos) {
   return pedir('/productos/', { method: 'POST', token, body: JSON.stringify(datos) });
 }

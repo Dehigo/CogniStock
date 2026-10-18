@@ -5,6 +5,7 @@ import Categorias from './categorias/Categorias';
 import Parametros from './parametros/Parametros';
 import Productos from './productos/Productos';
 import Proveedores from './proveedores/Proveedores';
+import SalidasQR from './salidas/SalidasQR';
 import { SECCION_INICIAL, SECCIONES } from './secciones';
 import Usuarios from './usuarios/Usuarios';
 import '../../styles/admin.css';
@@ -16,6 +17,7 @@ const PANTALLAS = {
   productos: Productos,
   categorias: Categorias,
   proveedores: Proveedores,
+  salidas: SalidasQR,
   bitacora: Bitacora,
   alertas: AlertasStock,
   parametros: Parametros,
@@ -73,8 +75,11 @@ function PanelAdmin({ token, usuario, onLogout }) {
         </div>
         <div className="panel-sesion">
           <div className="panel-usuario">
-            <span className="panel-usuario-nombre">{usuario.nombre}</span>
-            <span className="insignia insignia-base">{rol}</span>
+            <span className="panel-usuario-avatar">{usuario.nombre?.charAt(0)?.toUpperCase() || 'U'}</span>
+            <div className="panel-usuario-datos">
+              <span className="panel-usuario-nombre">{usuario.nombre}</span>
+              <span className="insignia insignia-base">{rol}</span>
+            </div>
           </div>
           <button className="boton boton-secundario" onClick={onLogout}>
             Cerrar sesión

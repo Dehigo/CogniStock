@@ -29,6 +29,13 @@ export const SECCIONES = [
     requisito: 'RF-09',
   },
   {
+    id: 'salidas',
+    grupo: 'Inventario',
+    titulo: 'Salidas (QR)',
+    descripcion: 'Validación rápida de stock por QR para registrar salidas del inventario.',
+    requisito: 'RF-08',
+  },
+  {
     id: 'alertas',
     grupo: 'Inventario',
     titulo: 'Alertas de stock',
