@@ -17,5 +17,7 @@ urlpatterns = [
     path("auth/login/", views.login, name="login"),
     path("auth/logout/", views.logout, name="logout"),
     path("auth/me/", views.usuario_actual, name="usuario-actual"),
+    path("productos/qr/", views.producto_por_qr, name="producto-por-qr"),
+    path("salidas/", views.registrar_salida, name="registrar-salida"),
     path("", include(router.urls)),
 ]

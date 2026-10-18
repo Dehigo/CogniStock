@@ -52,6 +52,32 @@ class ProductoSerializer(serializers.ModelSerializer):
         }
 
 
+class ProductoQrSerializer(serializers.ModelSerializer):
+    categoria_nombre = serializers.CharField(source="categoria.nombre", read_only=True, default=None)
+    stock_actual = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Producto
+        fields = [
+            "id",
+            "codigo",
+            "codigo_qr",
+            "nombre",
+            "descripcion",
+            "categoria",
+            "categoria_nombre",
+            "unidad_medida",
+            "stock_minimo",
+            "stock_actual",
+            "activo",
+        ]
+
+    def get_stock_actual(self, obj):
+        stock = getattr(obj, "stock", None)
+        if stock is None:
+            return 0
+        return stock.cantidad
+
 
 class ProveedorSerializer(serializers.ModelSerializer):
     class Meta:
