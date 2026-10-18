@@ -9,6 +9,9 @@ function Proveedores({ token }) {
   const [error, setError] = useState('');
   const [formulario, setFormulario] = useState(null);
 
+  const proveedoresActivos = proveedores.filter((proveedor) => proveedor.activo).length;
+  const proveedoresInactivos = proveedores.length - proveedoresActivos;
+
   const cargarProveedores = useCallback(async () => {
     try {
       setProveedores(await listarProveedores(token, { buscar }));
@@ -53,6 +56,24 @@ function Proveedores({ token }) {
         <button className="boton" onClick={() => setFormulario({ proveedor: null })}>
           Nuevo proveedor
         </button>
+      </div>
+
+      <div className="resumen-grid">
+        <div className="tarjeta-resumen">
+          <span className="tarjeta-resumen-titulo">Total</span>
+          <strong className="tarjeta-resumen-numero">{proveedores.length}</strong>
+          <small className="tarjeta-resumen-subtitulo">proveedores registrados</small>
+        </div>
+        <div className="tarjeta-resumen tarjeta-resumen-azul">
+          <span className="tarjeta-resumen-titulo">Activos</span>
+          <strong className="tarjeta-resumen-numero">{proveedoresActivos}</strong>
+          <small className="tarjeta-resumen-subtitulo">vinculados al flujo</small>
+        </div>
+        <div className="tarjeta-resumen tarjeta-resumen-gris">
+          <span className="tarjeta-resumen-titulo">Inactivos</span>
+          <strong className="tarjeta-resumen-numero">{proveedoresInactivos}</strong>
+          <small className="tarjeta-resumen-subtitulo">pendientes de revisión</small>
+        </div>
       </div>
 
       <div className="filtros">

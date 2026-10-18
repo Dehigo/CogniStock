@@ -8,6 +8,9 @@ function Categorias({ token }) {
   const [error, setError] = useState('');
   const [formulario, setFormulario] = useState(null);
 
+  const categoriasActivas = categorias.filter((categoria) => categoria.activo).length;
+  const categoriasInactivas = categorias.length - categoriasActivas;
+
   useEffect(() => {
     listarCategorias(token)
       .then(setCategorias)
@@ -52,6 +55,24 @@ function Categorias({ token }) {
         <button className="boton" onClick={() => setFormulario({ categoria: null })}>
           Nueva categoría
         </button>
+      </div>
+
+      <div className="resumen-grid">
+        <div className="tarjeta-resumen">
+          <span className="tarjeta-resumen-titulo">Total</span>
+          <strong className="tarjeta-resumen-numero">{categorias.length}</strong>
+          <small className="tarjeta-resumen-subtitulo">categorías creadas</small>
+        </div>
+        <div className="tarjeta-resumen tarjeta-resumen-azul">
+          <span className="tarjeta-resumen-titulo">Activas</span>
+          <strong className="tarjeta-resumen-numero">{categoriasActivas}</strong>
+          <small className="tarjeta-resumen-subtitulo">disponibles para uso</small>
+        </div>
+        <div className="tarjeta-resumen tarjeta-resumen-gris">
+          <span className="tarjeta-resumen-titulo">Inactivas</span>
+          <strong className="tarjeta-resumen-numero">{categoriasInactivas}</strong>
+          <small className="tarjeta-resumen-subtitulo">ocultas temporalmente</small>
+        </div>
       </div>
 
       {error && <p className="error">{error}</p>}

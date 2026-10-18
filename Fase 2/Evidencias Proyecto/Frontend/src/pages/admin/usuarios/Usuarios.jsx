@@ -16,6 +16,9 @@ function Usuarios({ token, usuarioActual }) {
   const [error, setError] = useState('');
   const [formulario, setFormulario] = useState(null);
 
+  const usuariosActivos = usuarios.filter((usuario) => usuario.activo).length;
+  const usuariosInactivos = usuarios.length - usuariosActivos;
+
   const cargarUsuarios = useCallback(async () => {
     setCargando(true);
     setError('');
@@ -65,6 +68,24 @@ function Usuarios({ token, usuarioActual }) {
         <button className="boton" onClick={() => setFormulario({ usuario: null })}>
           Nuevo usuario
         </button>
+      </div>
+
+      <div className="resumen-grid">
+        <div className="tarjeta-resumen">
+          <span className="tarjeta-resumen-titulo">Total</span>
+          <strong className="tarjeta-resumen-numero">{usuarios.length}</strong>
+          <small className="tarjeta-resumen-subtitulo">usuarios registrados</small>
+        </div>
+        <div className="tarjeta-resumen tarjeta-resumen-azul">
+          <span className="tarjeta-resumen-titulo">Activos</span>
+          <strong className="tarjeta-resumen-numero">{usuariosActivos}</strong>
+          <small className="tarjeta-resumen-subtitulo">con acceso habilitado</small>
+        </div>
+        <div className="tarjeta-resumen tarjeta-resumen-gris">
+          <span className="tarjeta-resumen-titulo">Inactivos</span>
+          <strong className="tarjeta-resumen-numero">{usuariosInactivos}</strong>
+          <small className="tarjeta-resumen-subtitulo">sin acceso actual</small>
+        </div>
       </div>
 
       <div className="filtros">

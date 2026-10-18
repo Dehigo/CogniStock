@@ -42,6 +42,7 @@ function EnConstruccion({ seccion }) {
 
 function PanelAdmin({ token, usuario, onLogout }) {
   const [seccionActiva, setSeccionActiva] = useState(seccionDesdeUrl);
+  const [menuColapsado, setMenuColapsado] = useState(false);
 
   useEffect(() => {
     const alCambiarUrl = () => setSeccionActiva(seccionDesdeUrl());
@@ -51,16 +52,30 @@ function PanelAdmin({ token, usuario, onLogout }) {
 
   const seccion = SECCIONES.find((s) => s.id === seccionActiva);
   const Pantalla = PANTALLAS[seccion.id];
+  const rol = usuario?.rol ?? 'Usuario';
 
   return (
     <div className="panel">
       <header className="panel-cabecera">
-        <div>
-          <h1>CogniStock</h1>
-          <span className="panel-subtitulo">Panel de administración</span>
+        <div className="panel-cabecera-izq">
+          <button
+            type="button"
+            className="boton-menu-toggle"
+            onClick={() => setMenuColapsado((actual) => !actual)}
+            aria-label={menuColapsado ? 'Expandir menú' : 'Colapsar menú'}
+          >
+            {menuColapsado ? '→' : '←'}
+          </button>
+          <div>
+            <h1>CogniStock</h1>
+            <span className="panel-subtitulo">Panel de administración</span>
+          </div>
         </div>
         <div className="panel-sesion">
-          <span>{usuario.nombre}</span>
+          <div className="panel-usuario">
+            <span className="panel-usuario-nombre">{usuario.nombre}</span>
+            <span className="insignia insignia-base">{rol}</span>
+          </div>
           <button className="boton boton-secundario" onClick={onLogout}>
             Cerrar sesión
           </button>
@@ -68,7 +83,7 @@ function PanelAdmin({ token, usuario, onLogout }) {
       </header>
 
       <div className="panel-cuerpo">
-        <nav className="menu" aria-label="Secciones del panel">
+        <nav className={`menu ${menuColapsado ? 'menu-colapsado' : ''}`} aria-label="Secciones del panel">
           {GRUPOS.map((grupo) => (
             <div key={grupo} className="menu-grupo">
               <span className="menu-grupo-titulo">{grupo}</span>
@@ -78,6 +93,7 @@ function PanelAdmin({ token, usuario, onLogout }) {
                   href={`#${s.id}`}
                   className={`menu-enlace ${s.id === seccionActiva ? 'menu-enlace-activo' : ''}`}
                   aria-current={s.id === seccionActiva ? 'page' : undefined}
+                  title={s.titulo}
                 >
                   {s.titulo}
                 </a>

@@ -4,8 +4,6 @@ import { cerrarSesion, obtenerUsuario } from './services/api';
 import Login from './pages/Login';
 import './styles/login.css';
 
-const ROL_ADMINISTRADOR = 'Administrador';
-
 function App() {
   const [token, setToken] = useState(() => localStorage.getItem('token'));
   const [usuario, setUsuario] = useState(null);
@@ -37,7 +35,7 @@ function App() {
     }
   }
 
-  if (usuario?.rol === ROL_ADMINISTRADOR) {
+  if (usuario) {
     return <PanelAdmin token={token} usuario={usuario} onLogout={handleLogout} />;
   }
 
@@ -46,20 +44,6 @@ function App() {
       {!token && <Login onLogin={handleLogin} />}
 
       {token && !usuario && <p>Cargando...</p>}
-
-      {usuario && (
-        <section className="tarjeta">
-          <h1>Hola, {usuario.nombre}</h1>
-          <p className="subtitulo">Sesión iniciada correctamente</p>
-          <dl>
-            <dt>Email</dt>
-            <dd>{usuario.email}</dd>
-            <dt>Rol</dt>
-            <dd>{usuario.rol}</dd>
-          </dl>
-          <button onClick={handleLogout}>Cerrar sesión</button>
-        </section>
-      )}
     </main>
   );
 }
