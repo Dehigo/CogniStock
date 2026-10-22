@@ -6,7 +6,7 @@ CogniStock es un proyecto de título orientado al desarrollo de un sistema intel
 
 ## Estado del proyecto
 
-Actualmente el proyecto se encuentra en la **Fase 1: Definición del Proyecto**.
+Actualmente el proyecto se encuentra en la **Fase 2: Desarrollo del proyecto**.
 
 ### Fases
 
@@ -25,7 +25,10 @@ Fase 1/
 └── Evidencias Grupales/
 
 Fase 2/
-└── Pendiente
+├── Evidencias Individuales/
+├── Evidencias Grupales/
+└── Evidencias Proyecto/
 
 Fase 3/
-└── Pendiente
+├── Evidencias Individuales/
+└── Evidencias Grupales/
