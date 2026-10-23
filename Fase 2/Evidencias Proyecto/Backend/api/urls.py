@@ -11,6 +11,11 @@ router.register("productos", views.ProductoViewSet, basename="producto")
 router.register("proveedores", views.ProveedorViewSet, basename="proveedor")
 router.register("bitacora", views.BitacoraViewSet, basename="bitacora")
 router.register("parametros", views.ParametroViewSet, basename="parametro")
+router.register("monedas", views.MonedaViewSet, basename="moneda")
+router.register("estados-cotizacion", views.EstadoCotizacionViewSet, basename="estado-cotizacion")
+router.register("cotizaciones", views.CotizacionViewSet, basename="cotizacion")
+router.register("entradas", views.EntradaViewSet, basename="entrada")
+router.register("movimientos", views.MovimientoViewSet, basename="movimiento")
 
 urlpatterns = [
     path("health/", views.health_check, name="health-check"),

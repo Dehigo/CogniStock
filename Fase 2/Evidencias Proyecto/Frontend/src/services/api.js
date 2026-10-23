@@ -138,3 +138,35 @@ export function editarParametro(token, id, datos) {
 export function eliminarParametro(token, id) {
   return pedir(`/parametros/${id}/`, { method: 'DELETE', token });
 }
+
+export function listarMonedas(token) {
+  return pedir('/monedas/', { token });
+}
+
+export function listarCotizaciones(token, filtros = {}) {
+  return pedir(`/cotizaciones/?${armarFiltros(filtros)}`, { token });
+}
+
+export function crearCotizacion(token, datos) {
+  return pedir('/cotizaciones/', { method: 'POST', token, body: JSON.stringify(datos) });
+}
+
+export function editarCotizacion(token, id, datos) {
+  return pedir(`/cotizaciones/${id}/`, { method: 'PATCH', token, body: JSON.stringify(datos) });
+}
+
+export function cambiarEstadoCotizacion(token, id, estado, motivo = '') {
+  return pedir(`/cotizaciones/${id}/estado/`, { method: 'POST', token, body: JSON.stringify({ estado, motivo }) });
+}
+
+export function listarEntradas(token, filtros = {}) {
+  return pedir(`/entradas/?${armarFiltros(filtros)}`, { token });
+}
+
+export function registrarEntrada(token, datos) {
+  return pedir('/entradas/', { method: 'POST', token, body: JSON.stringify(datos) });
+}
+
+export function listarMovimientos(token, filtros = {}) {
+  return pedir(`/movimientos/?${armarFiltros(filtros)}`, { token });
+}

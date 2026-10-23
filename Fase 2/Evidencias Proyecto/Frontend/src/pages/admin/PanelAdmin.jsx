@@ -1,31 +1,36 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import AlertasStock from './alertas/AlertasStock';
 import Bitacora from './bitacora/Bitacora';
 import Categorias from './categorias/Categorias';
+import Cotizaciones from './cotizaciones/Cotizaciones';
+import Entradas from './entradas/Entradas';
+import Movimientos from './movimientos/Movimientos';
 import Parametros from './parametros/Parametros';
 import Productos from './productos/Productos';
 import Proveedores from './proveedores/Proveedores';
 import SalidasQR from './salidas/SalidasQR';
-import { SECCION_INICIAL, SECCIONES } from './secciones';
+import { ROL_ADMINISTRADOR, SECCION_INICIAL, seccionesDelRol } from './secciones';
 import Usuarios from './usuarios/Usuarios';
 import '../../styles/admin.css';
-
-const GRUPOS = [...new Set(SECCIONES.map((seccion) => seccion.grupo))];
 
 const PANTALLAS = {
   usuarios: Usuarios,
   productos: Productos,
   categorias: Categorias,
   proveedores: Proveedores,
+  cotizaciones: Cotizaciones,
+  entradas: Entradas,
+  movimientos: Movimientos,
   salidas: SalidasQR,
   bitacora: Bitacora,
   alertas: AlertasStock,
   parametros: Parametros,
 };
 
-function seccionDesdeUrl() {
+function seccionDesdeUrl(secciones) {
   const id = window.location.hash.slice(1);
-  return SECCIONES.some((seccion) => seccion.id === id) ? id : SECCION_INICIAL;
+  if (secciones.some((seccion) => seccion.id === id)) return id;
+  return secciones.some((seccion) => seccion.id === SECCION_INICIAL) ? SECCION_INICIAL : secciones[0].id;
 }
 
 function EnConstruccion({ seccion }) {
@@ -43,18 +48,19 @@ function EnConstruccion({ seccion }) {
 }
 
 function PanelAdmin({ token, usuario, onLogout }) {
-  const [seccionActiva, setSeccionActiva] = useState(seccionDesdeUrl);
+  const secciones = useMemo(() => seccionesDelRol(usuario.rol), [usuario.rol]);
+  const grupos = [...new Set(secciones.map((seccion) => seccion.grupo))];
+  const [seccionActiva, setSeccionActiva] = useState(() => seccionDesdeUrl(secciones));
   const [menuColapsado, setMenuColapsado] = useState(false);
 
   useEffect(() => {
-    const alCambiarUrl = () => setSeccionActiva(seccionDesdeUrl());
+    const alCambiarUrl = () => setSeccionActiva(seccionDesdeUrl(secciones));
     window.addEventListener('hashchange', alCambiarUrl);
     return () => window.removeEventListener('hashchange', alCambiarUrl);
-  }, []);
+  }, [secciones]);
 
-  const seccion = SECCIONES.find((s) => s.id === seccionActiva);
+  const seccion = secciones.find((s) => s.id === seccionActiva);
   const Pantalla = PANTALLAS[seccion.id];
-  const rol = usuario?.rol ?? 'Usuario';
 
   return (
     <div className="panel">
@@ -70,7 +76,9 @@ function PanelAdmin({ token, usuario, onLogout }) {
           </button>
           <div>
             <h1>CogniStock</h1>
-            <span className="panel-subtitulo">Panel de administración</span>
+            <span className="panel-subtitulo">
+              {usuario.rol === ROL_ADMINISTRADOR ? 'Panel de administración' : 'Gestión de inventario'}
+            </span>
           </div>
         </div>
         <div className="panel-sesion">
@@ -78,7 +86,7 @@ function PanelAdmin({ token, usuario, onLogout }) {
             <span className="panel-usuario-avatar">{usuario.nombre?.charAt(0)?.toUpperCase() || 'U'}</span>
             <div className="panel-usuario-datos">
               <span className="panel-usuario-nombre">{usuario.nombre}</span>
-              <span className="insignia insignia-base">{rol}</span>
+              <span className="insignia insignia-base">{usuario.rol}</span>
             </div>
           </div>
           <button className="boton boton-secundario" onClick={onLogout}>
@@ -89,10 +97,10 @@ function PanelAdmin({ token, usuario, onLogout }) {
 
       <div className="panel-cuerpo">
         <nav className={`menu ${menuColapsado ? 'menu-colapsado' : ''}`} aria-label="Secciones del panel">
-          {GRUPOS.map((grupo) => (
+          {grupos.map((grupo) => (
             <div key={grupo} className="menu-grupo">
               <span className="menu-grupo-titulo">{grupo}</span>
-              {SECCIONES.filter((s) => s.grupo === grupo).map((s) => (
+              {secciones.filter((s) => s.grupo === grupo).map((s) => (
                 <a
                   key={s.id}
                   href={`#${s.id}`}

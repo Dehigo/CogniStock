@@ -8,3 +8,11 @@ from api.serializers.inventario import (
 from api.serializers.usuarios import RolSerializer, UsuarioAdminSerializer
 from api.serializers.bitacora import BitacoraSerializer
 from api.serializers.parametros import ParametroSerializer
+from api.serializers.cotizaciones import (
+    CotizacionSerializer,
+    EntradaSerializer,
+    EstadoCotizacionSerializer,
+    MonedaSerializer,
+    NuevaEntradaSerializer,
+)
+from api.serializers.movimientos import MovimientoSerializer
