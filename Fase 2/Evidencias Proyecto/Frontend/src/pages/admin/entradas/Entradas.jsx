@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { listarCotizaciones, listarEntradas, registrarEntrada } from '../../../services/api';
+import { listarCotizaciones, listarEntradas, listarFeriados, registrarEntrada } from '../../../services/api';
 
 function formatearFechaHora(fecha) {
   return new Date(fecha).toLocaleString('es-CL', { dateStyle: 'short', timeStyle: 'short' });
@@ -17,6 +17,15 @@ function Entradas({ token }) {
   const [mensaje, setMensaje] = useState('');
 
   const cotizacion = cotizaciones.find((c) => c.id === Number(cotizacionId));
+  const [proximoFeriado, setProximoFeriado] = useState(null);
+
+  useEffect(() => {
+    // Sirve para planificar recepciones. Si Nager.Date falla, no se muestra nada (RB-008).
+    const hoy = new Date().toLocaleDateString('en-CA');
+    listarFeriados(token, hoy.slice(0, 4))
+      .then((feriados) => setProximoFeriado(feriados.find((f) => f.fecha >= hoy) ?? null))
+      .catch(() => {});
+  }, [token]);
 
   const cargarDatos = useCallback(
     () =>
@@ -79,6 +88,12 @@ function Entradas({ token }) {
       </div>
 
       <p className="ayuda">Solo se puede registrar una entrada contra una cotización aprobada (RB-001, RB-002).</p>
+      {proximoFeriado && (
+        <p className="ayuda">
+          Próximo feriado: {new Date(`${proximoFeriado.fecha}T00:00`).toLocaleDateString('es-CL')} ·{' '}
+          {proximoFeriado.nombre}. Considéralo al coordinar entregas con proveedores.
+        </p>
+      )}
 
       <div className="filtros">
         <select value={cotizacionId} onChange={(e) => elegirCotizacion(e.target.value)} aria-label="Cotización">

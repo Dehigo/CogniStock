@@ -26,5 +26,7 @@ urlpatterns = [
     path("productos/qr/", views.producto_por_qr, name="producto-por-qr"),
     path("salidas/", views.registrar_salida, name="registrar-salida"),
     path("agente/consultar/", views.consultar_agente, name="consultar-agente"),
+    path("integraciones/tipo-cambio/", views.tipo_de_cambio, name="tipo-cambio"),
+    path("integraciones/feriados/", views.feriados, name="feriados"),
     path("", include(router.urls)),
 ]

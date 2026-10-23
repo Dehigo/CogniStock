@@ -1,9 +1,24 @@
+import { useEffect, useState } from 'react';
+import { obtenerTipoCambio } from '../../../services/api';
 import EstadoCotizacion from './EstadoCotizacion';
 import { formatearMonto } from './formato';
 
+// Frankfurter no publica el peso chileno: solo se convierte entre USD y EUR.
+const OTRA_MONEDA = { USD: 'EUR', EUR: 'USD' };
+
 // Muestra una cotización que ya no se puede editar (aprobada, recibida o anulada).
-function CotizacionDetalle({ cotizacion, onCerrar }) {
+function CotizacionDetalle({ token, cotizacion, onCerrar }) {
   const moneda = cotizacion.moneda_codigo;
+  const otraMoneda = OTRA_MONEDA[moneda];
+  const [cambio, setCambio] = useState(null);
+
+  useEffect(() => {
+    if (!otraMoneda) return;
+    // Si la API falla, simplemente no se muestra la conversión (RB-008).
+    obtenerTipoCambio(token, moneda, otraMoneda)
+      .then(setCambio)
+      .catch(() => {});
+  }, [token, moneda, otraMoneda]);
 
   return (
     <div className="modal-fondo" onClick={onCerrar}>
@@ -41,6 +56,11 @@ function CotizacionDetalle({ cotizacion, onCerrar }) {
           </table>
         </div>
         <p className="detalle-total">Total: {formatearMonto(cotizacion.total, moneda)}</p>
+        {cambio && (
+          <p className="ayuda detalle-total">
+            Equivale a {formatearMonto(cotizacion.total * cambio.valor, otraMoneda)} (Frankfurter, {cambio.fecha})
+          </p>
+        )}
 
         <div className="modal-acciones">
           <button type="button" className="boton boton-secundario" onClick={onCerrar}>

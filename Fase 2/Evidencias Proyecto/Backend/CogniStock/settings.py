@@ -91,6 +91,10 @@ CORS_ALLOWED_ORIGINS = env.list(
     default=["http://localhost:5173", "http://127.0.0.1:5173"],
 )
 
+# APIs externas (RF-10). Las direcciones se pueden cambiar en el .env.
+FRANKFURTER_BASE_URL = env("FRANKFURTER_BASE_URL", default="https://api.frankfurter.dev/v1")
+NAGER_DATE_BASE_URL = env("NAGER_DATE_BASE_URL", default="https://date.nager.at/api/v3")
+
 # Agente IA (RF-11). Sin clave el endpoint responde que el agente no está configurado.
 GROQ_API_KEY = env("GROQ_API_KEY", default="")
 GROQ_MODEL = env("GROQ_MODEL", default="openai/gpt-oss-120b")

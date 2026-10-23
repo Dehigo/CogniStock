@@ -175,7 +175,7 @@ function Cotizaciones({ token }) {
           onCancelar={() => setFormulario(null)}
         />
       )}
-      {soloVer && <CotizacionDetalle cotizacion={formulario.cotizacion} onCerrar={() => setFormulario(null)} />}
+      {soloVer && <CotizacionDetalle token={token} cotizacion={formulario.cotizacion} onCerrar={() => setFormulario(null)} />}
     </section>
   );
 }

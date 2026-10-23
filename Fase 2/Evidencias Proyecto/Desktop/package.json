@@ -1,0 +1,20 @@
+{
+  "name": "cognistock-escritorio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "App de escritorio de CogniStock (NW.js). Abre el mismo panel web y solo usa la API REST.",
+  "main": "http://localhost:5173/?escritorio",
+  "window": {
+    "title": "CogniStock",
+    "width": 1280,
+    "height": 800,
+    "min_width": 900,
+    "min_height": 600
+  },
+  "scripts": {
+    "start": "nw ."
+  },
+  "devDependencies": {
+    "nw": "0.117.0"
+  }
+}

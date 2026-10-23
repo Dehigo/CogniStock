@@ -182,3 +182,11 @@ export function listarRecomendaciones(token, filtros = {}) {
 export function revisarRecomendacion(token, id, estado) {
   return pedir(`/recomendaciones/${id}/revisar/`, { method: 'POST', token, body: JSON.stringify({ estado }) });
 }
+
+export function obtenerTipoCambio(token, desde, hacia) {
+  return pedir(`/integraciones/tipo-cambio/?${armarFiltros({ desde, hacia })}`, { token });
+}
+
+export function listarFeriados(token, anio) {
+  return pedir(`/integraciones/feriados/?${armarFiltros({ anio })}`, { token });
+}
