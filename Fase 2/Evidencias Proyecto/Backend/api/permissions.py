@@ -21,3 +21,14 @@ class PuedeGestionarInventario(BasePermission):
         if request.method in SAFE_METHODS:
             return True
         return usuario.rol.nombre in (Rol.ADMINISTRADOR, Rol.ENCARGADO)
+
+
+class PuedeRegistrarSalidas(BasePermission):
+    """Las salidas por QR las hacen los tres roles (HU-04, HU-05: el usuario operativo escanea y registra)."""
+
+    message = "Tu rol no puede registrar salidas."
+
+    def has_permission(self, request, view):
+        usuario = request.user
+        roles = (Rol.ADMINISTRADOR, Rol.ENCARGADO, Rol.OPERATIVO)
+        return bool(usuario and usuario.is_authenticated and usuario.rol.nombre in roles)

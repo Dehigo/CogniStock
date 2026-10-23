@@ -6,7 +6,7 @@ from api.models import EstadoCotizacion, Moneda, Rol
 ROLES = [
     (Rol.ADMINISTRADOR, "Gestiona usuarios, roles, parámetros y supervisa operaciones."),
     (Rol.ENCARGADO, "Registra cotizaciones y entradas, consulta stock y gestiona salidas."),
-    ("Usuario operativo", "Consulta productos y ejecuta salidas mediante QR según permisos."),
+    (Rol.OPERATIVO, "Consulta productos y ejecuta salidas mediante QR según permisos."),
 ]
 
 ESTADOS_COTIZACION = [

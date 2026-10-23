@@ -12,6 +12,7 @@ from django.utils import timezone
 class Rol(models.Model):
     ADMINISTRADOR = "Administrador"
     ENCARGADO = "Encargado de inventario"
+    OPERATIVO = "Usuario operativo"
 
     nombre = models.CharField(max_length=50, unique=True)
     descripcion = models.CharField(max_length=255, blank=True)

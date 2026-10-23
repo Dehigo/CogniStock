@@ -22,7 +22,11 @@ async function pedir(ruta, { token, ...opciones } = {}) {
   }
 
   const datos = respuesta.status === 204 ? null : await respuesta.json();
-  if (!respuesta.ok) throw new Error(mensajeDeError(respuesta.status, datos));
+  if (!respuesta.ok) {
+    const error = new Error(mensajeDeError(respuesta.status, datos));
+    error.status = respuesta.status; // 401 = la sesión ya no es válida
+    throw error;
+  }
   return datos;
 }
 

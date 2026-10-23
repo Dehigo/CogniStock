@@ -13,7 +13,7 @@ class SalidasQrTests(TestCase):
         )
         cls.operativo = Usuario.objects.create_user(
             email="operativo@cognistock.cl", password="clave-segura-123", nombre="Operativo",
-            rol=Rol.objects.create(nombre="Operativo"),
+            rol=Rol.objects.create(nombre=Rol.OPERATIVO),
         )
 
     def setUp(self):
@@ -76,6 +76,18 @@ class SalidasQrTests(TestCase):
         self.salir(cantidad=6)
         self.assertEqual(AlertaStock.objects.get().tipo, "STOCK_BAJO")
 
-    def test_operativo_no_registra_salidas(self):
+    def test_operativo_registra_salidas(self):  # HU-04, HU-05
         self.client.force_authenticate(self.operativo)
+        self.assertEqual(self.client.get("/api/productos/qr/", {"codigo_qr": "QR-DES-01"}).status_code, 200)
+        self.assertEqual(self.salir().status_code, 201)
+
+    def test_rol_desconocido_no_registra_salidas(self):
+        otro = Usuario.objects.create_user(email="x@c.cl", password="clave-segura-123", nombre="X",
+                                           rol=Rol.objects.create(nombre="Invitado"))
+        self.client.force_authenticate(otro)
         self.assertEqual(self.salir().status_code, 403)
+
+    def test_operativo_no_gestiona_productos(self):
+        self.client.force_authenticate(self.operativo)
+        r = self.client.post("/api/productos/", {"codigo": "N-1", "nombre": "Nuevo", "precio_referencia": 1}, format="json")
+        self.assertEqual(r.status_code, 403)

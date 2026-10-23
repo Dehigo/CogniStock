@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from api import servicio_inventario
 from api.bitacora import registrar_en_bitacora
 from api.models import CategoriaProducto, Producto, Proveedor, Stock
-from api.permissions import PuedeGestionarInventario
+from api.permissions import PuedeGestionarInventario, PuedeRegistrarSalidas
 from api.serializers import CategoriaSerializer, ProductoQrSerializer, ProductoSerializer, ProveedorSerializer
 from api.servicio_inventario import Rechazo
 
@@ -18,7 +18,7 @@ def respuesta_rechazo(rechazo):
 
 
 @api_view(["GET"])
-@permission_classes([PuedeGestionarInventario])
+@permission_classes([PuedeRegistrarSalidas])
 def producto_por_qr(request):
     try:
         producto = servicio_inventario.buscar_producto_por_qr(request.query_params.get("codigo_qr"))
@@ -28,7 +28,7 @@ def producto_por_qr(request):
 
 
 @api_view(["POST"])
-@permission_classes([PuedeGestionarInventario])
+@permission_classes([PuedeRegistrarSalidas])
 def registrar_salida(request):
     datos = request.data
     try:

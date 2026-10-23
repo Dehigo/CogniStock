@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Agente from './agente/Agente';
 import AlertasStock from './alertas/AlertasStock';
 import Bitacora from './bitacora/Bitacora';
@@ -10,7 +10,7 @@ import Parametros from './parametros/Parametros';
 import Productos from './productos/Productos';
 import Proveedores from './proveedores/Proveedores';
 import SalidasQR from './salidas/SalidasQR';
-import { ROL_ADMINISTRADOR, SECCION_INICIAL, seccionesDelRol } from './secciones';
+import { ROL_ADMINISTRADOR, seccionesDelRol, seccionInicial } from './secciones';
 import Usuarios from './usuarios/Usuarios';
 import '../../styles/admin.css';
 
@@ -29,37 +29,52 @@ const PANTALLAS = {
   parametros: Parametros,
 };
 
-function seccionDesdeUrl(secciones) {
-  const id = window.location.hash.slice(1);
-  if (secciones.some((seccion) => seccion.id === id)) return id;
-  return secciones.some((seccion) => seccion.id === SECCION_INICIAL) ? SECCION_INICIAL : secciones[0].id;
+// En tablet y celular (hasta 1024 px) el menú se esconde y se abre con el botón ☰.
+const PANTALLA_CHICA = '(max-width: 1024px)';
+const esPantallaChica = () => window.matchMedia(PANTALLA_CHICA).matches;
+
+// En celular las tablas se muestran como tarjetas. Para que cada dato diga qué es,
+// se copia el título de su columna en la celda (data-label), y el CSS lo muestra.
+function etiquetarTablas(contenedor) {
+  contenedor.querySelectorAll('table.tabla').forEach((tabla) => {
+    const titulos = [...tabla.querySelectorAll('thead th')].map((th) => th.textContent);
+    tabla.querySelectorAll('tbody tr').forEach((fila) => {
+      [...fila.children].forEach((celda, i) => {
+        if (titulos[i] && celda.dataset.label !== titulos[i]) celda.dataset.label = titulos[i];
+      });
+    });
+  });
 }
 
-function EnConstruccion({ seccion }) {
-  return (
-    <section>
-      <div className="seccion-cabecera">
-        <h2>{seccion.titulo}</h2>
-      </div>
-      <div className="en-construccion">
-        <span className="en-construccion-etiqueta">En construcción · {seccion.requisito}</span>
-        <p>{seccion.descripcion}</p>
-      </div>
-    </section>
-  );
+function seccionDesdeUrl(secciones, rol) {
+  const id = window.location.hash.slice(1);
+  return secciones.some((seccion) => seccion.id === id) ? id : seccionInicial(rol);
 }
 
 function PanelAdmin({ token, usuario, onLogout }) {
   const secciones = useMemo(() => seccionesDelRol(usuario.rol), [usuario.rol]);
   const grupos = [...new Set(secciones.map((seccion) => seccion.grupo))];
-  const [seccionActiva, setSeccionActiva] = useState(() => seccionDesdeUrl(secciones));
-  const [menuColapsado, setMenuColapsado] = useState(false);
+  const [seccionActiva, setSeccionActiva] = useState(() => seccionDesdeUrl(secciones, usuario.rol));
+  const [menuAbierto, setMenuAbierto] = useState(() => !esPantallaChica());
+  const contenido = useRef(null);
 
   useEffect(() => {
-    const alCambiarUrl = () => setSeccionActiva(seccionDesdeUrl(secciones));
+    const alCambiarUrl = () => setSeccionActiva(seccionDesdeUrl(secciones, usuario.rol));
     window.addEventListener('hashchange', alCambiarUrl);
     return () => window.removeEventListener('hashchange', alCambiarUrl);
-  }, [secciones]);
+  }, [secciones, usuario.rol]);
+
+  // Las pantallas cargan sus tablas después de mostrarse, así que se re-etiquetan cada vez que cambian.
+  useEffect(() => {
+    const observador = new MutationObserver(() => etiquetarTablas(contenido.current));
+    observador.observe(contenido.current, { childList: true, subtree: true });
+    etiquetarTablas(contenido.current);
+    return () => observador.disconnect();
+  }, []);
+
+  function elegirSeccion() {
+    if (esPantallaChica()) setMenuAbierto(false);
+  }
 
   const seccion = secciones.find((s) => s.id === seccionActiva);
   const Pantalla = PANTALLAS[seccion.id];
@@ -71,10 +86,11 @@ function PanelAdmin({ token, usuario, onLogout }) {
           <button
             type="button"
             className="boton-menu-toggle"
-            onClick={() => setMenuColapsado((actual) => !actual)}
-            aria-label={menuColapsado ? 'Expandir menú' : 'Colapsar menú'}
+            onClick={() => setMenuAbierto((actual) => !actual)}
+            aria-label={menuAbierto ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={menuAbierto}
           >
-            {menuColapsado ? '→' : '←'}
+            ☰
           </button>
           <div>
             <h1>CogniStock</h1>
@@ -92,13 +108,15 @@ function PanelAdmin({ token, usuario, onLogout }) {
             </div>
           </div>
           <button className="boton boton-secundario" onClick={onLogout}>
-            Cerrar sesión
+            Salir
           </button>
         </div>
       </header>
 
       <div className="panel-cuerpo">
-        <nav className={`menu ${menuColapsado ? 'menu-colapsado' : ''}`} aria-label="Secciones del panel">
+        {/* En tablet y celular, tocar fuera del menú abierto lo cierra. */}
+        {menuAbierto && <div className="menu-fondo" onClick={() => setMenuAbierto(false)} />}
+        <nav className={`menu ${menuAbierto ? 'menu-abierto' : ''}`} aria-label="Secciones del panel">
           {grupos.map((grupo) => (
             <div key={grupo} className="menu-grupo">
               <span className="menu-grupo-titulo">{grupo}</span>
@@ -109,6 +127,7 @@ function PanelAdmin({ token, usuario, onLogout }) {
                   className={`menu-enlace ${s.id === seccionActiva ? 'menu-enlace-activo' : ''}`}
                   aria-current={s.id === seccionActiva ? 'page' : undefined}
                   title={s.titulo}
+                  onClick={elegirSeccion}
                 >
                   {s.titulo}
                 </a>
@@ -117,12 +136,8 @@ function PanelAdmin({ token, usuario, onLogout }) {
           ))}
         </nav>
 
-        <main className="panel-contenido">
-          {Pantalla ? (
-            <Pantalla token={token} usuarioActual={usuario} />
-          ) : (
-            <EnConstruccion seccion={seccion} />
-          )}
+        <main className="panel-contenido" ref={contenido}>
+          <Pantalla token={token} usuarioActual={usuario} />
         </main>
       </div>
     </div>

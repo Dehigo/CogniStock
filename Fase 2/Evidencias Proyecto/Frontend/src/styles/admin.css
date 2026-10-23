@@ -149,27 +149,12 @@
   transition: width 0.25s ease, padding 0.25s ease;
 }
 
-.menu-colapsado {
-  width: 82px;
-  padding-inline: 8px;
+.menu:not(.menu-abierto) {
+  display: none;
 }
 
-.menu-colapsado .menu-grupo-titulo,
-.menu-colapsado .menu-enlace {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 0.72rem;
-}
-
-.menu-colapsado .menu-grupo-titulo {
-  padding-inline: 4px;
-  letter-spacing: 0.02em;
-}
-
-.menu-colapsado .menu-enlace {
-  padding-inline: 8px;
-  text-align: center;
+.menu-fondo {
+  display: none;
 }
 
 .menu-grupo + .menu-grupo {
@@ -218,28 +203,7 @@
   padding: 32px;
 }
 
-.en-construccion {
-  padding: 32px;
-  border: 1px dashed #334155;
-  border-radius: 12px;
-  background: #1e293b;
-}
 
-.en-construccion-etiqueta {
-  display: inline-block;
-  margin-bottom: 12px;
-  padding: 2px 10px;
-  border-radius: 999px;
-  background: rgba(234, 179, 8, 0.15);
-  color: #fde047;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.en-construccion p {
-  margin: 0;
-  color: #cbd5e1;
-}
 
 .seccion-cabecera {
   display: flex;
@@ -630,52 +594,192 @@ a.boton {
   font-size: 0.9rem;
 }
 
-@media (max-width: 800px) {
-  .panel-cuerpo {
-    flex-direction: column;
+/* ---------- Tablet y celular (hasta 1024 px): el menú se abre como panel lateral ---------- */
+@media (max-width: 1024px) {
+  .menu-abierto {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 30;
+    width: 260px;
+    overflow-y: auto;
   }
 
-  .menu {
-    width: auto;
-    display: flex;
-    gap: 4px;
-    overflow-x: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #334155 #162032;
-    padding: 8px 12px;
-    border-right: none;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  .menu-fondo {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    background: rgba(2, 6, 23, 0.6);
   }
 
-  .menu-grupo {
-    display: flex;
-    gap: 4px;
+  .panel-cabecera {
+    padding: 14px 20px;
   }
 
-  .menu-grupo + .menu-grupo {
-    margin-top: 0;
-  }
-
-  .menu-grupo-titulo {
-    display: none;
-  }
-
-  .menu-enlace {
-    white-space: nowrap;
+  .panel-contenido {
+    padding: 24px 20px;
   }
 }
 
+/* ---------- Tablet vertical y celular (hasta 900 px): tablas como tarjetas ---------- */
+@media (max-width: 900px) {
+  /* Tablas como tarjetas: cada fila es una tarjeta y cada dato muestra el título de su columna */
+  .tabla thead {
+    display: none;
+  }
+
+  .tabla,
+  .tabla tbody,
+  .tabla tr,
+  .tabla td {
+    display: block;
+    width: 100%;
+  }
+
+  .tabla tr {
+    padding: 12px 14px;
+  }
+
+  .tabla tbody tr + tr {
+    border-top: 1px solid rgba(148, 163, 184, 0.15);
+  }
+
+  .tabla tbody tr + tr td {
+    border-top: none;
+  }
+
+  .tabla td {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+    text-align: right;
+    white-space: normal;
+  }
+
+  /* El título de la columna va a la izquierda y el dato a la derecha */
+  .tabla td::before {
+    content: attr(data-label);
+    margin-right: auto;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    text-align: left;
+  }
+
+  .tabla .tabla-mensaje {
+    justify-content: center;
+  }
+
+  .tabla .tabla-mensaje::before,
+  .tabla .tabla-acciones::before {
+    content: none;
+  }
+
+  .tabla .tabla-acciones {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 18px;
+    padding-top: 10px;
+  }
+
+  .tabla-acciones .boton-enlace + .boton-enlace {
+    margin-left: 0;
+  }
+}
+
+/* ---------- Celular (hasta 640 px) ---------- */
 @media (max-width: 640px) {
   .panel-cabecera,
   .panel-contenido {
-    padding: 16px;
+    padding: 12px 14px;
+  }
+
+  /* Cabecera compacta: solo el avatar y el botón Salir */
+  .panel-subtitulo,
+  .panel-usuario-datos {
+    display: none;
+  }
+
+  .seccion-cabecera {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .resumen-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
 
   .filtros,
   .fila-doble {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .filtros > * {
+    width: 100%;
+  }
+
+  /* 16 px evita que el iPhone haga zoom al tocar un campo */
+  .panel input,
+  .panel select,
+  .panel textarea {
+    font-size: 16px;
+  }
+
+  /* Ventanas emergentes a pantalla completa */
+  .modal-fondo {
+    padding: 0;
+  }
+
+  .modal {
+    max-width: none;
+    min-height: 100vh;
+    max-height: none;
+    border-radius: 0;
+    padding: 20px 16px;
+  }
+
+  /* Fila de producto en la cotización: producto arriba, cantidad y precio abajo */
+  .detalle-fila {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .detalle-fila > :first-child {
+    grid-column: 1 / -1;
+  }
+
+  .agente-pregunta,
+  .agente-respuesta {
+    max-width: 100%;
+  }
+}
+
+/* ---------- Pantallas táctiles: todo lo que se toca mide al menos 44 px ---------- */
+@media (pointer: coarse) {
+  .boton,
+  .boton-menu-toggle,
+  .panel input,
+  .panel select {
+    min-height: 44px;
+  }
+
+  .boton-menu-toggle {
+    min-width: 44px;
+  }
+
+  .boton-enlace {
+    padding: 10px 0;
+  }
+
+  .menu-enlace {
+    padding: 14px 12px;
   }
 }
 

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { desactivarProducto, editarProducto, listarCategorias, listarProductos } from '../../../services/api';
 import ProductoForm from './ProductoForm';
 import QrProducto from './QrProducto';
+import { gestionaInventario } from '../secciones';
 
 function formatearNumero(valor) {
   return Number(valor).toLocaleString('es-CL');
@@ -30,7 +31,9 @@ function estadoStock(producto) {
   return { etiqueta: 'Disponible', clase: 'stock-disponible' };
 }
 
-function Productos({ token }) {
+function Productos({ token, usuarioActual }) {
+  // El usuario operativo solo consulta productos; crear, editar y desactivar es del encargado (HU-03).
+  const puedeEditar = gestionaInventario(usuarioActual.rol);
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [buscar, setBuscar] = useState('');
@@ -108,9 +111,11 @@ function Productos({ token }) {
     <section>
       <div className="seccion-cabecera">
         <h2>Productos</h2>
-        <button className="boton" onClick={() => setFormulario({ producto: null })}>
-          + Nuevo producto
-        </button>
+        {puedeEditar && (
+          <button className="boton" onClick={() => setFormulario({ producto: null })}>
+            + Nuevo producto
+          </button>
+        )}
       </div>
 
       <div className="resumen-grid" style={{ marginBottom: '18px' }}>
@@ -226,12 +231,16 @@ function Productos({ token }) {
                       <button className="boton-enlace" onClick={() => window.location.hash = '#salidas'}>
                         Salida
                       </button>
-                      <button className="boton-enlace" onClick={() => setFormulario({ producto })}>
-                        Editar
-                      </button>
-                      <button className="boton-enlace" onClick={() => cambiarEstado(producto)}>
-                        {producto.activo ? 'Desactivar' : 'Reactivar'}
-                      </button>
+                      {puedeEditar && (
+                        <>
+                          <button className="boton-enlace" onClick={() => setFormulario({ producto })}>
+                            Editar
+                          </button>
+                          <button className="boton-enlace" onClick={() => cambiarEstado(producto)}>
+                            {producto.activo ? 'Desactivar' : 'Reactivar'}
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 );
