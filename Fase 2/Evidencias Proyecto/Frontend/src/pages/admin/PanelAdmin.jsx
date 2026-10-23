@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import Agente from './agente/Agente';
 import AlertasStock from './alertas/AlertasStock';
 import Bitacora from './bitacora/Bitacora';
 import Categorias from './categorias/Categorias';
@@ -21,6 +22,7 @@ const PANTALLAS = {
   cotizaciones: Cotizaciones,
   entradas: Entradas,
   movimientos: Movimientos,
+  agente: Agente,
   salidas: SalidasQR,
   bitacora: Bitacora,
   alertas: AlertasStock,

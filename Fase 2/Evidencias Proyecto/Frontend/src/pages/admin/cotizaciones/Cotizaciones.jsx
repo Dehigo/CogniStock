@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { cambiarEstadoCotizacion, listarCotizaciones } from '../../../services/api';
+import CotizacionDetalle from './CotizacionDetalle';
 import CotizacionForm from './CotizacionForm';
 import EstadoCotizacion from './EstadoCotizacion';
 import { formatearFecha, formatearMonto } from './formato';
@@ -14,6 +15,8 @@ function Cotizaciones({ token }) {
   const [error, setError] = useState('');
   const [formulario, setFormulario] = useState(null);
 
+  // Una cotización ya aprobada, recibida o anulada solo se puede ver, no editar.
+  const soloVer = formulario?.cotizacion && formulario.cotizacion.estado !== 'REGISTRADA';
   const contar = (codigo) => cotizaciones.filter((cotizacion) => cotizacion.estado === codigo).length;
 
   const cargarCotizaciones = useCallback(async () => {
@@ -164,7 +167,7 @@ function Cotizaciones({ token }) {
         </table>
       </div>
 
-      {formulario && (
+      {formulario && !soloVer && (
         <CotizacionForm
           token={token}
           cotizacion={formulario.cotizacion}
@@ -172,6 +175,7 @@ function Cotizaciones({ token }) {
           onCancelar={() => setFormulario(null)}
         />
       )}
+      {soloVer && <CotizacionDetalle cotizacion={formulario.cotizacion} onCerrar={() => setFormulario(null)} />}
     </section>
   );
 }

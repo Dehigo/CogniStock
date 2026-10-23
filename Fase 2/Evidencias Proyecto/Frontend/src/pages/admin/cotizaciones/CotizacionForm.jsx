@@ -6,29 +6,22 @@ import {
   listarProductos,
   listarProveedores,
 } from '../../../services/api';
-import EstadoCotizacion from './EstadoCotizacion';
 import { formatearMonto } from './formato';
 
 const FILA_VACIA = { producto: '', cantidad: 1, precio_unitario: 0 };
 
-function hoy() {
-  const ahora = new Date();
-  return new Date(ahora.getTime() - ahora.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-}
+// Fecha de hoy como "2026-10-23" según la hora local (en-CA usa ese formato).
+const hoy = () => new Date().toLocaleDateString('en-CA');
 
+// Crear una cotización nueva o editar una que sigue REGISTRADA.
 function CotizacionForm({ token, cotizacion, onGuardar, onCancelar }) {
   const esNueva = cotizacion === null;
-  const soloLectura = !esNueva && cotizacion.estado !== 'REGISTRADA';
   const [numero, setNumero] = useState(cotizacion?.numero ?? '');
   const [proveedor, setProveedor] = useState(cotizacion?.proveedor ?? '');
   const [moneda, setMoneda] = useState(cotizacion?.moneda ?? '');
   const [fecha, setFecha] = useState(cotizacion?.fecha ?? hoy());
   const [observaciones, setObservaciones] = useState(cotizacion?.observaciones ?? '');
-  const [detalles, setDetalles] = useState(
-    cotizacion?.detalles.map(({ producto, cantidad, precio_unitario }) => ({ producto, cantidad, precio_unitario })) ?? [
-      { ...FILA_VACIA },
-    ],
-  );
+  const [detalles, setDetalles] = useState(cotizacion?.detalles ?? [{ ...FILA_VACIA }]);
   const [proveedores, setProveedores] = useState([]);
   const [productos, setProductos] = useState([]);
   const [monedas, setMonedas] = useState([]);
@@ -36,7 +29,6 @@ function CotizacionForm({ token, cotizacion, onGuardar, onCancelar }) {
   const [guardando, setGuardando] = useState(false);
 
   useEffect(() => {
-    if (soloLectura) return;
     Promise.all([
       listarProveedores(token, { activo: 'true' }),
       listarProductos(token, { activo: 'true' }),
@@ -49,11 +41,9 @@ function CotizacionForm({ token, cotizacion, onGuardar, onCancelar }) {
         setMoneda((actual) => actual || listaMonedas.find((m) => m.codigo === 'CLP')?.id || '');
       })
       .catch((err) => setError(err.message));
-  }, [token, soloLectura]);
+  }, [token]);
 
-  const codigoMoneda = soloLectura
-    ? cotizacion.moneda_codigo
-    : (monedas.find((m) => m.id === Number(moneda))?.codigo ?? 'CLP');
+  const codigoMoneda = monedas.find((m) => m.id === Number(moneda))?.codigo ?? 'CLP';
   const total = detalles.reduce((suma, d) => suma + Number(d.cantidad || 0) * Number(d.precio_unitario || 0), 0);
 
   function cambiarFila(indice, campo, valor) {
@@ -101,54 +91,6 @@ function CotizacionForm({ token, cotizacion, onGuardar, onCancelar }) {
     } finally {
       setGuardando(false);
     }
-  }
-
-  if (soloLectura) {
-    return (
-      <div className="modal-fondo" onClick={onCancelar}>
-        <div className="modal modal-grande" onClick={(e) => e.stopPropagation()}>
-          <h3>
-            Cotización {cotizacion.numero} <EstadoCotizacion estado={cotizacion.estado} />
-          </h3>
-          <p className="ayuda">
-            {cotizacion.proveedor_nombre} · creada por {cotizacion.creado_por_nombre}
-            {cotizacion.observaciones && ` · ${cotizacion.observaciones}`}
-          </p>
-
-          <div className="tabla-contenedor">
-            <table className="tabla">
-              <thead>
-                <tr>
-                  <th>Producto</th>
-                  <th>Cotizado</th>
-                  <th>Recibido</th>
-                  <th>Pendiente</th>
-                  <th>Precio unitario</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cotizacion.detalles.map((d) => (
-                  <tr key={d.id}>
-                    <td>{d.producto_nombre}</td>
-                    <td className="sin-salto">{d.cantidad}</td>
-                    <td className="sin-salto">{d.cantidad_recibida}</td>
-                    <td className="sin-salto">{d.cantidad_pendiente}</td>
-                    <td className="sin-salto">{formatearMonto(d.precio_unitario, codigoMoneda)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="detalle-total">Total: {formatearMonto(cotizacion.total, codigoMoneda)}</p>
-
-          <div className="modal-acciones">
-            <button type="button" className="boton boton-secundario" onClick={onCancelar}>
-              Cerrar
-            </button>
-          </div>
-        </div>
-      </div>
-    );
   }
 
   return (

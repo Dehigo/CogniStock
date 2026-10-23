@@ -6,3 +6,4 @@ djangorestframework==3.18.1
 psycopg2-binary==2.9.13
 sqlparse==0.6.0
 typing_extensions==4.16.0
+langchain-groq==1.1.3

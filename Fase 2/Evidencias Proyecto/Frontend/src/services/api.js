@@ -170,3 +170,15 @@ export function registrarEntrada(token, datos) {
 export function listarMovimientos(token, filtros = {}) {
   return pedir(`/movimientos/?${armarFiltros(filtros)}`, { token });
 }
+
+export function consultarAgente(token, pregunta) {
+  return pedir('/agente/consultar/', { method: 'POST', token, body: JSON.stringify({ pregunta }) });
+}
+
+export function listarRecomendaciones(token, filtros = {}) {
+  return pedir(`/recomendaciones/?${armarFiltros(filtros)}`, { token });
+}
+
+export function revisarRecomendacion(token, id, estado) {
+  return pedir(`/recomendaciones/${id}/revisar/`, { method: 'POST', token, body: JSON.stringify({ estado }) });
+}

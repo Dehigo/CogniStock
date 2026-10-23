@@ -51,6 +51,11 @@ export const SECCIONES = [
     titulo: 'Alertas de stock',
   },
   {
+    id: 'agente',
+    grupo: 'Inventario',
+    titulo: 'Asistente IA',
+  },
+  {
     id: 'usuarios',
     grupo: 'Administración',
     titulo: 'Usuarios',

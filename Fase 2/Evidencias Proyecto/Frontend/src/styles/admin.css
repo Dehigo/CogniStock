@@ -722,3 +722,40 @@ a.boton {
   text-align: right;
   font-weight: 600;
 }
+
+.agente-conversacion {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.agente-sugerencias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.agente-turno {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.agente-pregunta {
+  align-self: flex-end;
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.agente-respuesta {
+  align-self: flex-start;
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #1e293b;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  white-space: pre-wrap;
+}

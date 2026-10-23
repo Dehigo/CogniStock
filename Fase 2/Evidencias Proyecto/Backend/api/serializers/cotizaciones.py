@@ -78,9 +78,9 @@ class CotizacionSerializer(serializers.ModelSerializer):
         productos = [detalle["producto"] for detalle in detalles]
         if len(productos) != len(set(productos)):
             raise serializers.ValidationError("Un producto aparece dos veces en la cotización.")
-        inactivo = next((producto for producto in productos if not producto.activo), None)
-        if inactivo is not None:
-            raise serializers.ValidationError(f"El producto {inactivo.nombre} está inactivo.")
+        for producto in productos:
+            if not producto.activo:
+                raise serializers.ValidationError(f"El producto {producto.nombre} está inactivo.")
         return detalles
 
     def validate(self, datos):
@@ -93,8 +93,8 @@ class CotizacionSerializer(serializers.ModelSerializer):
         detalles = datos.pop("detalles")
         usuario = self.context["request"].user
         try:
-            estado = servicio_inventario.obtener_estado_cotizacion("REGISTRADA")
-        except servicio_inventario.OperacionRechazada as rechazo:
+            estado = servicio_inventario.estado_cotizacion("REGISTRADA")
+        except servicio_inventario.Rechazo as rechazo:
             raise serializers.ValidationError(rechazo.mensaje)
 
         cotizacion = Cotizacion.objects.create(**datos, estado=estado, creado_por=usuario)
@@ -112,15 +112,13 @@ class CotizacionSerializer(serializers.ModelSerializer):
         return cotizacion
 
     def to_representation(self, cotizacion):
+        # Agrega a cada producto cuánto llegó y cuánto falta, y el total de la cotización.
         datos = super().to_representation(cotizacion)
-        recibidas = servicio_inventario.cantidades_recibidas(cotizacion)
-        total = 0
+        recibido = servicio_inventario.cantidades_recibidas(cotizacion)
         for detalle in datos["detalles"]:
-            recibida = recibidas.get(detalle["producto"], 0)
-            detalle["cantidad_recibida"] = recibida
-            detalle["cantidad_pendiente"] = max(detalle["cantidad"] - recibida, 0)
-            total += detalle["cantidad"] * float(detalle["precio_unitario"])
-        datos["total"] = round(total, 2)
+            detalle["cantidad_recibida"] = recibido.get(detalle["producto"], 0)
+            detalle["cantidad_pendiente"] = detalle["cantidad"] - detalle["cantidad_recibida"]
+        datos["total"] = round(sum(d["cantidad"] * float(d["precio_unitario"]) for d in datos["detalles"]), 2)
         return datos
 
 
@@ -151,10 +149,3 @@ class EntradaSerializer(serializers.ModelSerializer):
             "detalles",
         ]
 
-
-class NuevaEntradaSerializer(serializers.Serializer):
-    """Solo revisa la forma de los datos; las reglas las aplica registrar_entrada."""
-
-    cotizacion = serializers.IntegerField(required=False, allow_null=True)
-    detalles = serializers.ListField(child=serializers.DictField(), allow_empty=True)
-    observaciones = serializers.CharField(required=False, allow_blank=True, default="")

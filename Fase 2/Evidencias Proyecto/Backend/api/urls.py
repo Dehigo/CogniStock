@@ -16,6 +16,7 @@ router.register("estados-cotizacion", views.EstadoCotizacionViewSet, basename="e
 router.register("cotizaciones", views.CotizacionViewSet, basename="cotizacion")
 router.register("entradas", views.EntradaViewSet, basename="entrada")
 router.register("movimientos", views.MovimientoViewSet, basename="movimiento")
+router.register("recomendaciones", views.RecomendacionViewSet, basename="recomendacion")
 
 urlpatterns = [
     path("health/", views.health_check, name="health-check"),
@@ -24,5 +25,6 @@ urlpatterns = [
     path("auth/me/", views.usuario_actual, name="usuario-actual"),
     path("productos/qr/", views.producto_por_qr, name="producto-por-qr"),
     path("salidas/", views.registrar_salida, name="registrar-salida"),
+    path("agente/consultar/", views.consultar_agente, name="consultar-agente"),
     path("", include(router.urls)),
 ]

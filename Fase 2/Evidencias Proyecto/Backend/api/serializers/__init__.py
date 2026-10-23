@@ -13,6 +13,5 @@ from api.serializers.cotizaciones import (
     EntradaSerializer,
     EstadoCotizacionSerializer,
     MonedaSerializer,
-    NuevaEntradaSerializer,
 )
 from api.serializers.movimientos import MovimientoSerializer

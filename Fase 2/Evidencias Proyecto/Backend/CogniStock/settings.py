@@ -82,6 +82,7 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_THROTTLE_RATES": {
         "login": "10/min",
+        "agente": "20/min",
     },
 }
 
@@ -89,6 +90,10 @@ CORS_ALLOWED_ORIGINS = env.list(
     "CORS_ALLOWED_ORIGINS",
     default=["http://localhost:5173", "http://127.0.0.1:5173"],
 )
+
+# Agente IA (RF-11). Sin clave el endpoint responde que el agente no está configurado.
+GROQ_API_KEY = env("GROQ_API_KEY", default="")
+GROQ_MODEL = env("GROQ_MODEL", default="openai/gpt-oss-120b")
 
 LANGUAGE_CODE = "es-cl"
 TIME_ZONE = "America/Santiago"
