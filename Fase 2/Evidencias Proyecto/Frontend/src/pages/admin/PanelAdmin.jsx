@@ -5,6 +5,7 @@ import Bitacora from './bitacora/Bitacora';
 import Categorias from './categorias/Categorias';
 import Cotizaciones from './cotizaciones/Cotizaciones';
 import Entradas from './entradas/Entradas';
+import Inicio from './inicio/Inicio';
 import Movimientos from './movimientos/Movimientos';
 import Parametros from './parametros/Parametros';
 import Productos from './productos/Productos';
@@ -15,6 +16,7 @@ import Usuarios from './usuarios/Usuarios';
 import '../../styles/admin.css';
 
 const PANTALLAS = {
+  inicio: Inicio,
   usuarios: Usuarios,
   productos: Productos,
   categorias: Categorias,

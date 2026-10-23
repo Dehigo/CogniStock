@@ -52,3 +52,9 @@ class MovimientosTests(TestCase):
     def test_fecha_imposible_se_ignora(self):
         r = self.client.get("/api/movimientos/", {"desde": "2026-13-45", "hasta": "abc"})
         self.assertEqual((r.status_code, len(r.data)), (200, 2))
+
+    def test_resumen_de_inicio(self):
+        r = self.client.get("/api/resumen/")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual((r.data["entradas_hoy"], r.data["salidas_hoy"], r.data["cotizaciones_por_aprobar"]), (1, 1, 0))
+        self.assertEqual(r.data["cotizaciones_por_recibir"], 0)  # se recibió todo: quedó RECIBIDA

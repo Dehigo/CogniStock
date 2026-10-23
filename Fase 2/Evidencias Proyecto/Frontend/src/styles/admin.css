@@ -863,3 +863,17 @@ a.boton {
   border: 1px solid rgba(148, 163, 184, 0.15);
   white-space: pre-wrap;
 }
+
+/* Tarjetas del inicio: son enlaces a la sección donde se resuelve cada cosa */
+.tarjeta-enlace {
+  color: inherit;
+  text-decoration: none;
+}
+
+.tarjeta-alerta {
+  border-color: rgba(248, 113, 113, 0.45);
+}
+
+.tarjeta-alerta .tarjeta-resumen-numero {
+  color: #fca5a5;
+}

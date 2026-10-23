@@ -9,6 +9,7 @@ const SOLO_ADMINISTRADOR = [ROL_ADMINISTRADOR];
 
 // Quién ve cada sección del menú.
 export const SECCIONES = [
+  { id: 'inicio', grupo: 'Inventario', titulo: 'Inicio', roles: [ROL_ENCARGADO] },
   { id: 'productos', grupo: 'Inventario', titulo: 'Productos', roles: TODOS },
   { id: 'categorias', grupo: 'Inventario', titulo: 'Categorías', roles: GESTIONAN_INVENTARIO },
   { id: 'proveedores', grupo: 'Inventario', titulo: 'Proveedores', roles: GESTIONAN_INVENTARIO },
@@ -24,7 +25,7 @@ export const SECCIONES = [
 ];
 
 // La primera pantalla que ve cada rol al entrar.
-const INICIO = { [ROL_ADMINISTRADOR]: 'usuarios', [ROL_ENCARGADO]: 'productos', [ROL_OPERATIVO]: 'salidas' };
+const INICIO = { [ROL_ADMINISTRADOR]: 'usuarios', [ROL_ENCARGADO]: 'inicio', [ROL_OPERATIVO]: 'salidas' };
 
 export function seccionInicial(rol) {
   return INICIO[rol] ?? 'productos';

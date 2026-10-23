@@ -13,3 +13,4 @@ from api.views.cotizaciones import CotizacionViewSet, EntradaViewSet, EstadoCoti
 from api.views.movimientos import MovimientoViewSet
 from api.views.agente import RecomendacionViewSet, consultar_agente
 from api.views.integraciones import feriados, tipo_de_cambio
+from api.views.resumen import resumen

@@ -194,3 +194,7 @@ export function obtenerTipoCambio(token, desde, hacia) {
 export function listarFeriados(token, anio) {
   return pedir(`/integraciones/feriados/?${armarFiltros({ anio })}`, { token });
 }
+
+export function obtenerResumen(token) {
+  return pedir('/resumen/', { token });
+}
