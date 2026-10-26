@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { buscarProductoPorQr, registrarSalidaQr } from '../../../services/api';
+import QrScanner from '../../../components/QrScanner';
 
 function formatearNumero(valor) {
   return Number(valor ?? 0).toLocaleString('es-CL');
@@ -18,9 +19,10 @@ function SalidasQR({ token }) {
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState('');
   const [mensaje, setMensaje] = useState('');
+  const [mostrarCamara, setMostrarCamara] = useState(false);
 
   async function buscarProducto(event) {
-    event.preventDefault();
+    if (event) event.preventDefault();
     const codigo = codigoQr.trim();
 
     if (!codigo) {
@@ -29,6 +31,28 @@ function SalidasQR({ token }) {
       return;
     }
 
+    setCargando(true);
+    setError('');
+    setMensaje('');
+
+    try {
+      const datos = await buscarProductoPorQr(token, codigo);
+      setProducto(datos);
+      setCantidad(1);
+      setObservaciones('');
+    } catch (err) {
+      setProducto(null);
+      setError(err.message);
+    } finally {
+      setCargando(false);
+    }
+  }
+
+  async function handleScanSuccess(decodedText) {
+    setCodigoQr(decodedText);
+    setMostrarCamara(false); 
+    
+    const codigo = decodedText.trim();
     setCargando(true);
     setError('');
     setMensaje('');
@@ -93,21 +117,62 @@ function SalidasQR({ token }) {
     <section>
       <div className="seccion-cabecera">
         <h2>Salidas (QR)</h2>
-        <span className="insignia insignia-base">RF-08</span>
+        <span className="insignia insignia-base">RF-08 / HU-04</span>
       </div>
 
-      <form onSubmit={buscarProducto} className="filtros filtros-acciones" style={{ marginBottom: '12px' }}>
+      <form onSubmit={buscarProducto} className="filtros filtros-acciones" style={{ marginBottom: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
         <input
           type="text"
           value={codigoQr}
           onChange={(event) => setCodigoQr(event.target.value)}
           placeholder="Escanea o escribe el código QR"
           aria-label="Código QR del producto"
+          style={{ flex: 1, minWidth: '200px' }}
         />
         <button type="submit" className="boton" disabled={cargando}>
           {cargando ? 'Buscando...' : 'Buscar producto'}
         </button>
+        <button 
+          type="button" 
+          className="boton boton-secundario" 
+          onClick={() => setMostrarCamara(!mostrarCamara)}
+        >
+          {mostrarCamara ? 'Cerrar Cámara' : '📷 Usar Cámara'}
+        </button>
       </form>
+
+      {mostrarCamara && (
+        <div style={{ 
+          marginBottom: '16px', 
+          background: '#1e293b', 
+          border: '1px solid #334155',
+          padding: '16px', 
+          borderRadius: '12px',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
+          color: '#f8fafc'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <p style={{ margin: 0, fontWeight: '600', fontSize: '0.95rem' }}>📷 Escanea el código QR del producto</p>
+            <button 
+              type="button" 
+              className="boton boton-secundario" 
+              style={{ padding: '4px 10px', fontSize: '0.85rem' }}
+              onClick={() => setMostrarCamara(false)}
+            >
+              ✕ Cerrar
+            </button>
+          </div>
+          
+          <div style={{ 
+            overflow: 'hidden', 
+            borderRadius: '8px', 
+            background: '#0f172a',
+            border: '1px solid #334155'
+          }}>
+            <QrScanner onScanSuccess={handleScanSuccess} />
+          </div>
+        </div>
+      )}
 
       {error && <p className="error">{error}</p>}
       {mensaje && <p className="success">{mensaje}</p>}

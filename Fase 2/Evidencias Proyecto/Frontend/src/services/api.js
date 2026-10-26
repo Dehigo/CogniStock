@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api';
+const API_URL = import.meta.env.VITE_API_URL ?? '/api';
 
 function mensajeDeError(status, datos) {
   if (status === 429) return 'Demasiados intentos. Espera un minuto e inténtalo de nuevo.';
