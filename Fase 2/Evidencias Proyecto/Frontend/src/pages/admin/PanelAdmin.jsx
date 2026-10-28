@@ -49,7 +49,8 @@ function etiquetarTablas(contenedor) {
 }
 
 function seccionDesdeUrl(secciones, rol) {
-  const id = window.location.hash.slice(1);
+  const hash = window.location.hash.slice(1);
+  const id = hash.split('?')[0] || '';
   return secciones.some((seccion) => seccion.id === id) ? id : seccionInicial(rol);
 }
 

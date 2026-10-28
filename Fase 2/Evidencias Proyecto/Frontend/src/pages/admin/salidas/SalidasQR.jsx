@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { buscarProductoPorQr, registrarSalidaQr } from '../../../services/api';
 import QrScanner from '../../../components/QrScanner';
 
@@ -20,6 +20,33 @@ function SalidasQR({ token }) {
   const [error, setError] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [mostrarCamara, setMostrarCamara] = useState(false);
+
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (!hash.startsWith('salidas')) return;
+
+    const params = new URLSearchParams(hash.split('?')[1] || '');
+    const qrDesdeUrl = params.get('codigo_qr')?.trim();
+    if (!qrDesdeUrl) return;
+
+    setCodigoQr(qrDesdeUrl);
+    setCargando(true);
+    setError('');
+    setMensaje('');
+
+    buscarProductoPorQr(token, qrDesdeUrl)
+      .then((datos) => {
+        setProducto(datos);
+        setCantidad(1);
+        setObservaciones('');
+        window.history.replaceState(null, '', '#salidas');
+      })
+      .catch((err) => {
+        setProducto(null);
+        setError(err.message);
+      })
+      .finally(() => setCargando(false));
+  }, [token]);
 
   async function buscarProducto(event) {
     if (event) event.preventDefault();
@@ -120,13 +147,14 @@ function SalidasQR({ token }) {
         <span className="insignia insignia-base">RF-08 / HU-04</span>
       </div>
 
-      <form onSubmit={buscarProducto} className="filtros filtros-acciones" style={{ marginBottom: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+      <form onSubmit={buscarProducto} className="filtros filtros-acciones salidas-busqueda" style={{ marginBottom: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
         <input
           type="text"
           value={codigoQr}
           onChange={(event) => setCodigoQr(event.target.value)}
           placeholder="Escanea o escribe el código QR"
           aria-label="Código QR del producto"
+          className="input-qr"
           style={{ flex: 1, minWidth: '200px' }}
         />
         <button type="submit" className="boton" disabled={cargando}>
@@ -178,33 +206,33 @@ function SalidasQR({ token }) {
       {mensaje && <p className="success">{mensaje}</p>}
 
       {producto && (
-        <div className="tarjeta-resumen tarjeta-resumen-azul" style={{ marginTop: '16px' }}>
+        <div className="tarjeta-resumen tarjeta-resumen-azul salidas-producto-card" style={{ marginTop: '16px' }}>
           <span className="tarjeta-resumen-titulo">Producto identificado</span>
-          <div className="fila-doble" style={{ marginTop: '12px' }}>
-            <div>
+          <div className="fila-doble salidas-data" style={{ marginTop: '12px' }}>
+            <div className="salidas-data-item">
               <strong>{producto.nombre}</strong>
               <div className="ayuda">Código: {producto.codigo}</div>
             </div>
-            <div>
+            <div className="salidas-data-item salidas-stock-box">
               <strong>Stock actual</strong>
               <div className="ayuda">{formatearUnidades(Number(producto.stock_actual ?? 0))}</div>
             </div>
           </div>
 
-          <div className="fila-doble" style={{ marginTop: '12px' }}>
-            <div>
+          <div className="fila-doble salidas-data" style={{ marginTop: '12px' }}>
+            <div className="salidas-data-item">
               <strong>QR</strong>
               <div className="ayuda">{producto.codigo_qr}</div>
             </div>
-            <div>
+            <div className="salidas-data-item">
               <strong>Categoría</strong>
               <div className="ayuda">{producto.categoria_nombre || 'Sin categoría'}</div>
             </div>
           </div>
 
-          <form onSubmit={registrarSalida} style={{ marginTop: '20px' }}>
+          <form onSubmit={registrarSalida} className="salidas-formulario" style={{ marginTop: '20px' }}>
             <div className="fila-doble">
-              <div>
+              <div className="salidas-field">
                 <label htmlFor="cantidad-salida">Cantidad a retirar</label>
                 <input
                   id="cantidad-salida"
@@ -212,24 +240,28 @@ function SalidasQR({ token }) {
                   min="1"
                   value={cantidad}
                   onChange={(event) => setCantidad(event.target.value)}
+                  className="input-premium"
                 />
               </div>
-              <div>
+              <div className="salidas-field">
                 <label htmlFor="stock-disp">Stock disponible</label>
-                <input id="stock-disp" type="text" value={formatearUnidades(Number(producto.stock_actual ?? 0))} readOnly />
+                <input id="stock-disp" type="text" value={formatearUnidades(Number(producto.stock_actual ?? 0))} readOnly className="input-premium input-readonly" />
               </div>
             </div>
 
-            <label htmlFor="observaciones-salida">Observaciones</label>
-            <textarea
-              id="observaciones-salida"
-              rows="3"
-              value={observaciones}
-              onChange={(event) => setObservaciones(event.target.value)}
-              placeholder="Ej.: Ajuste por venta del día, retiro por despacho, etc."
-            />
+            <div className="salidas-field">
+              <label htmlFor="observaciones-salida">Observaciones</label>
+              <textarea
+                id="observaciones-salida"
+                rows="3"
+                value={observaciones}
+                onChange={(event) => setObservaciones(event.target.value)}
+                placeholder="Ej.: Ajuste por venta del día, retiro por despacho, etc."
+                className="input-premium textarea-premium"
+              />
+            </div>
 
-            <div className="modal-acciones">
+            <div className="modal-acciones salidas-acciones">
               <button type="button" className="boton boton-secundario" onClick={() => setProducto(null)}>
                 Cancelar
               </button>

@@ -228,7 +228,13 @@ function Productos({ token, usuarioActual }) {
                       <button className="boton-enlace" onClick={() => setProductoQr(producto)}>
                         QR
                       </button>
-                      <button className="boton-enlace" onClick={() => window.location.hash = '#salidas'}>
+                      <button
+                        className="boton-enlace"
+                        onClick={() => {
+                          const codigoQr = encodeURIComponent(producto.codigo_qr || producto.codigo || '');
+                          window.location.hash = `#salidas?codigo_qr=${codigoQr}`;
+                        }}
+                      >
                         Salida
                       </button>
                       {puedeEditar && (
