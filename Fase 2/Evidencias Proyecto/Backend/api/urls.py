@@ -29,5 +29,6 @@ urlpatterns = [
     path("resumen/", views.resumen, name="resumen"),
     path("integraciones/tipo-cambio/", views.tipo_de_cambio, name="tipo-cambio"),
     path("integraciones/feriados/", views.feriados, name="feriados"),
+    path("integraciones/producto/", views.buscar_producto, name="buscar-producto"),
     path("", include(router.urls)),
 ]

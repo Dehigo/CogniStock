@@ -1,4 +1,5 @@
-"""APIs externas (RF-10): Frankfurter (tipo de cambio) y Nager.Date (feriados de Chile).
+"""APIs externas (RF-10): Frankfurter (tipo de cambio), Nager.Date (feriados de Chile)
+y UPCitemdb (datos de un producto según su código de barras).
 
 Regla RB-008: si una API falla, la app no se cae. Cada llamada tiene un tiempo máximo,
 queda registrada en llamadas_api_externa y los datos se guardan para no pedirlos de nuevo.
@@ -79,3 +80,13 @@ def feriados(anio, usuario):
     for feriado in datos:
         Feriado.objects.get_or_create(fecha=feriado["date"], pais="CL", defaults={"nombre": feriado["localName"][:150]})
     return list(guardados)
+
+
+
+def buscar_producto(codigo_barras, usuario):
+    """Nombre, marca y categoría de un código de barras según UPCitemdb, o None si no lo conoce."""
+    datos = _pedir("PRODUCTOS", f"{settings.PRODUCTOS_API_BASE_URL}/lookup?upc={codigo_barras}", usuario)
+    if not datos.get("items"):
+        return None
+    item = datos["items"][0]
+    return {"nombre": item.get("title", ""), "marca": item.get("brand", ""), "categoria": item.get("category", "")}

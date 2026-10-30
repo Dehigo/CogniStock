@@ -198,3 +198,7 @@ export function listarFeriados(token, anio) {
 export function obtenerResumen(token) {
   return pedir('/resumen/', { token });
 }
+
+export function buscarProductoExterno(token, codigoBarras) {
+  return pedir(`/integraciones/producto/?${armarFiltros({ codigo_barras: codigoBarras })}`, { token });
+}

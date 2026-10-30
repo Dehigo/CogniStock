@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { crearProducto, editarProducto } from '../../../services/api';
+import { buscarProductoExterno, crearProducto, editarProducto } from '../../../services/api';
 
 function ProductoForm({ token, producto, categorias, onGuardar, onCancelar }) {
   const esNuevo = producto === null;
@@ -12,6 +12,22 @@ function ProductoForm({ token, producto, categorias, onGuardar, onCancelar }) {
   const [stockMinimo, setStockMinimo] = useState(producto?.stock_minimo ?? 0);
   const [error, setError] = useState('');
   const [guardando, setGuardando] = useState(false);
+  const [buscando, setBuscando] = useState(false);
+
+  // HU-08: con el código de barras, una API externa completa el nombre y la descripción vacíos.
+  async function completarConCodigoBarras() {
+    setError('');
+    setBuscando(true);
+    try {
+      const datos = await buscarProductoExterno(token, codigoBarras.trim());
+      if (!nombre) setNombre(datos.nombre.slice(0, 150));
+      if (!descripcion) setDescripcion([datos.marca, datos.categoria].filter(Boolean).join(' · '));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBuscando(false);
+    }
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -79,6 +95,14 @@ function ProductoForm({ token, producto, categorias, onGuardar, onCancelar }) {
           placeholder="El que viene impreso en el envase"
         />
         <p className="ayuda">Si el producto no trae uno, déjalo vacío y se generará un código para imprimir.</p>
+        <button
+          type="button"
+          className="boton boton-secundario"
+          onClick={completarConCodigoBarras}
+          disabled={buscando || !codigoBarras.trim()}
+        >
+          {buscando ? 'Buscando...' : 'Completar con el código de barras'}
+        </button>
 
         <div className="fila-doble">
           <div>

@@ -12,5 +12,5 @@ from api.views.parametros import ParametroViewSet
 from api.views.cotizaciones import CotizacionViewSet, EntradaViewSet, EstadoCotizacionViewSet, MonedaViewSet
 from api.views.movimientos import MovimientoViewSet
 from api.views.agente import RecomendacionViewSet, consultar_agente
-from api.views.integraciones import feriados, tipo_de_cambio
+from api.views.integraciones import buscar_producto, feriados, tipo_de_cambio
 from api.views.resumen import resumen

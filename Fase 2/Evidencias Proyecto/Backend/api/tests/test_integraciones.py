@@ -19,6 +19,7 @@ NAGER = [
     {"date": "2026-01-01", "localName": "Año Nuevo"},
     {"date": "2026-09-18", "localName": "Independencia Nacional"},
 ]
+UPCITEMDB = {"items": [{"title": "Apple iPhone 6", "brand": "Apple", "category": "Electronics"}]}
 
 
 class IntegracionesTests(TestCase):
@@ -77,3 +78,25 @@ class IntegracionesTests(TestCase):
         with mock.patch("api.integraciones.urlopen", side_effect=OSError("sin internet")):
             r = self.client.get("/api/integraciones/feriados/", {"anio": 2026})
         self.assertEqual(r.status_code, 503)
+
+    def buscar_producto(self, codigo="0885909950805"):
+        return self.client.get("/api/integraciones/producto/", {"codigo_barras": codigo})
+
+    # CP-10: API de productos (HU-08)
+    def test_buscar_producto(self):
+        with mock.patch("api.integraciones.urlopen", return_value=respuesta(UPCITEMDB)):
+            r = self.buscar_producto()
+        self.assertEqual(r.data, {"nombre": "Apple iPhone 6", "marca": "Apple", "categoria": "Electronics"})
+        self.assertTrue(LlamadaApiExterna.objects.get(servicio="PRODUCTOS").exito)
+
+    def test_producto_desconocido(self):
+        with mock.patch("api.integraciones.urlopen", return_value=respuesta({"items": []})):
+            self.assertEqual(self.buscar_producto().status_code, 404)
+
+    def test_producto_api_caida(self):
+        with mock.patch("api.integraciones.urlopen", side_effect=TimeoutError("timeout")):
+            self.assertEqual(self.buscar_producto().status_code, 503)
+
+    def test_codigo_de_barras_invalido(self):
+        for codigo in ("", "abc", "123", "1" * 15):
+            self.assertEqual(self.buscar_producto(codigo).status_code, 400, codigo)

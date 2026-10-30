@@ -37,3 +37,20 @@ def feriados(request):
     except integraciones.ApiNoDisponible as error:
         return Response({"detail": str(error)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
     return Response([{"fecha": f.fecha, "nombre": f.nombre} for f in lista])
+
+
+
+@api_view(["GET"])
+def buscar_producto(request):
+    """GET /api/integraciones/producto/?codigo_barras=0885909950805"""
+    codigo_barras = request.query_params.get("codigo_barras", "").strip()
+    if not codigo_barras.isdecimal() or not 8 <= len(codigo_barras) <= 14:
+        return Response({"detail": "El código de barras debe tener entre 8 y 14 dígitos."}, status=400)
+
+    try:
+        datos = integraciones.buscar_producto(codigo_barras, request.user)
+    except integraciones.ApiNoDisponible as error:
+        return Response({"detail": str(error)}, status=503)
+    if datos is None:
+        return Response({"detail": "No se encontró información para ese código de barras."}, status=404)
+    return Response(datos)
