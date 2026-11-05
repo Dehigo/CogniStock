@@ -38,10 +38,10 @@ function UsuarioForm({ token, usuario, roles, esUsuarioActual, onGuardar, onCanc
         <h3>{esNuevo ? 'Nuevo usuario' : `Editar a ${usuario.nombre}`}</h3>
 
         <label htmlFor="nombre">Nombre</label>
-        <input id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+        <input id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={120} required />
 
         <label htmlFor="email">Email</label>
-        <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={150} required />
 
         <label htmlFor="rol">Rol</label>
         <select
@@ -69,6 +69,7 @@ function UsuarioForm({ token, usuario, roles, esUsuarioActual, onGuardar, onCanc
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder={esNuevo ? '' : 'Déjala vacía para no cambiarla'}
+          minLength={8}
           required={esNuevo}
         />
 

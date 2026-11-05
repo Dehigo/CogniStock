@@ -37,16 +37,26 @@ function ProveedorForm({ token, proveedor, onGuardar, onCancelar }) {
         <h3>{esNuevo ? 'Nuevo proveedor' : `Editar ${proveedor.nombre}`}</h3>
 
         <label htmlFor="nombre">Nombre</label>
-        <input id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+        <input id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={150} required />
 
         <label htmlFor="rut">RUT</label>
-        <input id="rut" value={rut} onChange={(e) => setRut(e.target.value)} placeholder="76.123.456-7" />
+        <input id="rut" value={rut} onChange={(e) => setRut(e.target.value)} placeholder="76.123.456-7"
+          maxLength={12}
+          pattern="[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-?[0-9kK]"
+          title="RUT con dígito verificador, por ejemplo 76.123.456-7"
+        />
 
         <label htmlFor="email">Email</label>
-        <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={150} />
 
         <label htmlFor="telefono">Teléfono</label>
-        <input id="telefono" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
+        <input id="telefono" value={telefono} onChange={(e) => setTelefono(e.target.value)}
+          type="tel"
+          maxLength={30}
+          pattern="\+?[0-9 ]{8,20}"
+          placeholder="+56 9 1234 5678"
+          title="Entre 8 y 15 dígitos; puede empezar con +"
+        />
 
         {error && <p className="error">{error}</p>}
 

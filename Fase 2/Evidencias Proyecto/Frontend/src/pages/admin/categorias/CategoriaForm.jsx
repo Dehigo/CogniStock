@@ -35,10 +35,10 @@ function CategoriaForm({ token, categoria, onGuardar, onCancelar }) {
         <h3>{esNueva ? 'Nueva categoría' : `Editar ${categoria.nombre}`}</h3>
 
         <label htmlFor="nombre">Nombre</label>
-        <input id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+        <input id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={100} required />
 
         <label htmlFor="descripcion">Descripción</label>
-        <input id="descripcion" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+        <input id="descripcion" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} maxLength={255} />
 
         {error && <p className="error">{error}</p>}
 

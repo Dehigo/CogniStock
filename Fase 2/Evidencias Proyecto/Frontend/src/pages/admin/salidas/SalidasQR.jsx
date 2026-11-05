@@ -152,6 +152,7 @@ function SalidasQR({ token }) {
           type="text"
           value={codigoQr}
           onChange={(event) => setCodigoQr(event.target.value)}
+          maxLength={255}
           placeholder="Escanea o escribe el código QR"
           aria-label="Código QR del producto"
           className="input-qr"
@@ -238,6 +239,8 @@ function SalidasQR({ token }) {
                   id="cantidad-salida"
                   type="number"
                   min="1"
+                  max={producto.stock_actual}
+                  step="1"
                   value={cantidad}
                   onChange={(event) => setCantidad(event.target.value)}
                   className="input-premium"
@@ -256,6 +259,7 @@ function SalidasQR({ token }) {
                 rows="3"
                 value={observaciones}
                 onChange={(event) => setObservaciones(event.target.value)}
+                maxLength={500}
                 placeholder="Ej.: Ajuste por venta del día, retiro por despacho, etc."
                 className="input-premium textarea-premium"
               />

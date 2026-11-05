@@ -41,14 +41,17 @@ function ParametroForm({ token, parametro, onGuardar, onCancelar }) {
           value={clave}
           onChange={(e) => setClave(e.target.value)}
           placeholder="dias_cobertura"
+          maxLength={80}
+          pattern="[a-z][a-z0-9_]*"
+          title="Minúsculas, números y guion bajo, empezando por una letra"
           required
         />
 
         <label htmlFor="valor">Valor</label>
-        <input id="valor" value={valor} onChange={(e) => setValor(e.target.value)} required />
+        <input id="valor" value={valor} onChange={(e) => setValor(e.target.value)} maxLength={255} required />
 
         <label htmlFor="descripcion">Descripción</label>
-        <input id="descripcion" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+        <input id="descripcion" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} maxLength={255} />
 
         {error && <p className="error">{error}</p>}
 
