@@ -41,6 +41,16 @@ class Rechazo(Exception):
         self.extra = extra
 
 
+LARGO_MAXIMO_OBSERVACIONES = 500
+
+
+def observaciones_validas(texto):
+    texto = str(texto or "").strip()
+    if len(texto) > LARGO_MAXIMO_OBSERVACIONES:
+        raise Rechazo("OBSERVACIONES_LARGAS", f"Las observaciones no pueden superar {LARGO_MAXIMO_OBSERVACIONES} caracteres.", 400)
+    return texto
+
+
 def cantidad_valida(valor):
     # Acepta 3 o "3". Rechaza 0, negativos, decimales, texto y vacío.
     if not str(valor).isdecimal() or int(valor) == 0:
@@ -74,7 +84,7 @@ def _revisar_alerta(producto, stock):
 def registrar_salida(usuario, codigo_qr, cantidad, observaciones=""):
     """Resta stock de un producto identificado por su QR (RF-08). Devuelve (salida, stock que queda)."""
     cantidad = cantidad_valida(cantidad)
-    observaciones = (observaciones or "").strip()
+    observaciones = observaciones_validas(observaciones)
 
     try:
         producto = buscar_producto_por_qr(codigo_qr)
@@ -105,7 +115,7 @@ def registrar_salida(usuario, codigo_qr, cantidad, observaciones=""):
         # Los escaneos fallidos también quedan registrados (menos cuando no se envió QR).
         if rechazo.codigo != "QR_REQUERIDO":
             EscaneoQR.objects.create(
-                codigo_leido=str(codigo_qr).strip(),
+                codigo_leido=str(codigo_qr).strip()[:255],  # el campo admite 255
                 producto=rechazo.producto,
                 usuario=usuario,
                 resultado="SIN_STOCK" if rechazo.codigo == "SIN_STOCK" else "QR_INVALIDO",
@@ -190,7 +200,7 @@ def registrar_entrada(usuario, cotizacion_id, detalles, observaciones=""):
                 raise Rechazo("PRODUCTO_INACTIVO", f"El producto {producto.nombre} está inactivo.", producto=producto)
 
         # 2) Guardar: entrada, y por cada producto su detalle, stock y movimiento.
-        observaciones = (observaciones or "").strip()
+        observaciones = observaciones_validas(observaciones)
         entrada = Entrada.objects.create(cotizacion=cotizacion, usuario=usuario, observaciones=observaciones)
         for producto_id, cantidad in sorted(llega.items()):  # en orden, para bloquear siempre igual
             producto = productos[producto_id]
