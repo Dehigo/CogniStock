@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.utils import timezone
 from rest_framework.test import APIClient
 
-from api.models import CategoriaProducto, EscaneoQR, Moneda, Producto, Proveedor, Rol, Stock, Usuario
+from api.models import AlertaStock, CategoriaProducto, EscaneoQR, Moneda, Producto, Proveedor, Rol, Stock, Usuario
 
 
 class ValidacionesFormulariosTests(TestCase):
@@ -87,3 +87,34 @@ class ValidacionesFormulariosTests(TestCase):
         self.client.force_authenticate(self.admin)
         self.assertEqual(self.post("/api/parametros/", {"clave": "Días cobertura", "valor": "7"}).status_code, 400)
         self.assertEqual(self.post("/api/parametros/", {"clave": "dias_cobertura", "valor": "7"}).status_code, 201)
+
+    def test_duplicados_sin_importar_mayusculas(self):
+        self.assertEqual(self.post("/api/categorias/", {"nombre": "Herramientas"}).status_code, 201)
+        self.assertEqual(self.post("/api/categorias/", {"nombre": "herramientas"}).status_code, 400)
+        self.assertEqual(self.post("/api/productos/", {"codigo": "MAR-01", "nombre": "Martillo"}).status_code, 201)
+        self.assertEqual(self.post("/api/productos/", {"codigo": "mar-01", "nombre": "Otro"}).status_code, 400)
+
+    def test_proveedor_mismo_nombre_necesita_rut(self):
+        self.assertEqual(self.post("/api/proveedores/", {"nombre": "Ferretería Sur"}).status_code, 201)
+        self.assertEqual(self.post("/api/proveedores/", {"nombre": "ferretería sur"}).status_code, 400)
+        self.assertEqual(self.post("/api/proveedores/", {"nombre": "Ferretería Sur", "rut": "76123456-0"}).status_code, 201)
+
+    def test_qr_escrito_en_minusculas(self):
+        Producto.objects.create(codigo="Q-1", codigo_qr="CS-ABC123", nombre="Q")
+        self.assertEqual(self.client.get("/api/productos/qr/", {"codigo_qr": "cs-abc123"}).status_code, 200)
+
+    def test_alerta_se_cierra_al_reponer_stock(self):
+        producto = Producto.objects.create(codigo="A-1", codigo_qr="QR-A", nombre="A", stock_minimo=5)
+        Stock.objects.create(producto=producto, cantidad=6)
+        self.post("/api/salidas/", {"codigo_qr": "QR-A", "cantidad": 3})
+        self.assertEqual(AlertaStock.objects.get().estado, "ACTIVA")
+
+        cotizacion = self.post("/api/cotizaciones/", {
+            "numero": "C-A", "proveedor": Proveedor.objects.create(nombre="P").id,
+            "moneda": Moneda.objects.get(codigo="CLP").id,
+            "detalles": [{"producto": producto.id, "cantidad": 10, "precio_unitario": "1"}],
+        }).data
+        self.post(f"/api/cotizaciones/{cotizacion['id']}/estado/", {"estado": "APROBADA"})
+        r = self.post("/api/entradas/", {"cotizacion": cotizacion["id"], "detalles": [{"producto": producto.id, "cantidad": 10}]})
+        self.assertEqual(r.status_code, 201, r.data)
+        self.assertEqual(AlertaStock.objects.get().estado, "ATENDIDA")

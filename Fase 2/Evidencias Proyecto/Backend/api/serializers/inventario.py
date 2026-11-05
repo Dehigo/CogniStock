@@ -22,7 +22,7 @@ class CategoriaSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "nombre": {
                 "validators": [
-                    UniqueValidator(CategoriaProducto.objects.all(), "Ya existe una categoría con este nombre."),
+                    UniqueValidator(CategoriaProducto.objects.all(), "Ya existe una categoría con este nombre.", lookup="iexact"),
                 ],
             },
         }
@@ -51,11 +51,11 @@ class ProductoSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {
             "codigo": {
-                "validators": [UniqueValidator(Producto.objects.all(), "Ya existe un producto con este código.")],
+                "validators": [UniqueValidator(Producto.objects.all(), "Ya existe un producto con este código.", lookup="iexact")],
             },
             "codigo_qr": {
                 "validators": [
-                    UniqueValidator(Producto.objects.all(), "Ya existe un producto con este código de barras."),
+                    UniqueValidator(Producto.objects.all(), "Ya existe un producto con este código de barras.", lookup="iexact"),
                 ],
             },
             "descripcion": {"max_length": 1000},
@@ -129,6 +129,17 @@ class ProveedorSerializer(serializers.ModelSerializer):
         if repetidos.exists():
             raise serializers.ValidationError("Ya existe un proveedor con este RUT.")
         return rut
+
+    def validate(self, datos):
+        # Dos proveedores pueden llamarse igual solo si el RUT los diferencia.
+        nombre = datos.get("nombre", getattr(self.instance, "nombre", ""))
+        rut = datos.get("rut", getattr(self.instance, "rut", ""))
+        repetidos = Proveedor.objects.filter(nombre__iexact=nombre)
+        if self.instance:
+            repetidos = repetidos.exclude(pk=self.instance.pk)
+        if not rut and repetidos.exists():
+            raise serializers.ValidationError({"nombre": "Ya existe un proveedor con este nombre. Agrega el RUT para diferenciarlo."})
+        return datos
 
     def validate_telefono(self, telefono):
         if telefono and not re.fullmatch(r"\+?[0-9]{8,15}", telefono.replace(" ", "")):

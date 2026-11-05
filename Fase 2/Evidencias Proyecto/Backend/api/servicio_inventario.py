@@ -5,6 +5,7 @@ Cada operación ocurre dentro de una transacción: o se guarda todo, o no se gua
 
 from django.db import transaction
 from django.db.models import Sum
+from django.utils import timezone
 
 from api.models import (
     AlertaStock,
@@ -63,7 +64,7 @@ def buscar_producto_por_qr(codigo_qr):
     if not codigo_qr:
         raise Rechazo("QR_REQUERIDO", "Se requiere el código QR.", 400)
 
-    producto = Producto.objects.select_related("categoria", "stock").filter(codigo_qr=codigo_qr).first()
+    producto = Producto.objects.select_related("categoria", "stock").filter(codigo_qr__iexact=codigo_qr).first()
     if producto is None:
         raise Rechazo("QR_INVALIDO", "Código QR no reconocido.", 404)
     if not producto.activo:
@@ -72,9 +73,17 @@ def buscar_producto_por_qr(codigo_qr):
 
 
 def _revisar_alerta(producto, stock):
-    if stock >= producto.stock_minimo and stock > 0:
+    tipo = None  # None = el stock está bien
+    if stock == 0:
+        tipo = AlertaStock.Tipo.SIN_STOCK
+    elif stock < producto.stock_minimo:
+        tipo = AlertaStock.Tipo.STOCK_BAJO
+
+    # Las alertas que ya no corresponden se cierran solas (por ejemplo, al reponer stock).
+    activas = AlertaStock.objects.filter(producto=producto, estado=AlertaStock.Estado.ACTIVA).exclude(tipo=tipo)
+    activas.update(estado=AlertaStock.Estado.ATENDIDA, atendida_en=timezone.now())
+    if tipo is None:
         return
-    tipo = AlertaStock.Tipo.SIN_STOCK if stock == 0 else AlertaStock.Tipo.STOCK_BAJO
     # Solo puede haber una alerta activa por producto y tipo: si ya existe, se actualiza.
     AlertaStock.objects.update_or_create(
         producto=producto, tipo=tipo, estado=AlertaStock.Estado.ACTIVA, defaults={"cantidad_al_generar": stock}
@@ -208,6 +217,7 @@ def registrar_entrada(usuario, cotizacion_id, detalles, observaciones=""):
             stock.cantidad += cantidad
             stock.save()
             DetalleEntrada.objects.create(entrada=entrada, producto=producto, cantidad=cantidad)
+            _revisar_alerta(producto, stock.cantidad)
             Movimiento.objects.create(
                 producto=producto, usuario=usuario, tipo="ENTRADA", cantidad=cantidad, entrada=entrada, observaciones=observaciones
             )
