@@ -4,7 +4,7 @@ from api.models import Usuario
 
 
 class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email = serializers.CharField(max_length=150)  # email completo o solo el usuario (lo que va antes de @)
     password = serializers.CharField(write_only=True, trim_whitespace=False)
 
 

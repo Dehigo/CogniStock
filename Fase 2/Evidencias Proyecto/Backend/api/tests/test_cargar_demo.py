@@ -17,3 +17,11 @@ class CargarDemoTests(TestCase):
         self.assertEqual(Stock.objects.get(producto__codigo="CLA-01").cantidad, 15)
         self.assertEqual(Movimiento.objects.count(), 7 + 5)  # 7 productos recibidos + 5 salidas
         self.assertTrue(AlertaStock.objects.filter(producto__codigo="CLA-01", estado="ACTIVA").exists())
+
+    def test_login_con_usuario_o_email(self):
+        call_command("cargar_demo", verbosity=0)
+        for texto in ("vendedor", "vendedor@cognistock.cl", "Vendedor"):
+            r = self.client.post("/api/auth/login/", {"email": texto, "password": "password"}, content_type="application/json")
+            self.assertEqual(r.status_code, 200, texto)
+        r = self.client.post("/api/auth/login/", {"email": "nadie", "password": "password"}, content_type="application/json")
+        self.assertEqual(r.status_code, 400)

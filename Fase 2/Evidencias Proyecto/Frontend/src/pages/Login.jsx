@@ -27,11 +27,12 @@ function Login({ onLogin }) {
       <h1>CogniStock</h1>
       <p className="subtitulo">Inicia sesión para continuar</p>
 
-      <label htmlFor="email">Email</label>
+      <label htmlFor="email">Email o usuario</label>
       <input
         id="email"
-        type="email"
-        autoComplete="email"
+        type="text"
+        autoComplete="username"
+        autoCapitalize="none"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required

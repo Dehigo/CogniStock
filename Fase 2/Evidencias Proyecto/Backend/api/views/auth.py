@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 
 from api.bitacora import registrar_en_bitacora
+from api.models import Usuario
 from api.serializers import LoginSerializer, UsuarioSerializer
 
 
@@ -30,6 +31,11 @@ def login(request):
     serializer = LoginSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     email = serializer.validated_data["email"]
+    # Se puede entrar con "vendedor" en vez de "vendedor@cognistock.cl", si solo un usuario empieza así.
+    if "@" not in email:
+        coincidencias = list(Usuario.objects.filter(email__istartswith=f"{email}@").values_list("email", flat=True)[:2])
+        if len(coincidencias) == 1:
+            email = coincidencias[0]
 
     usuario = authenticate(request, email=email, password=serializer.validated_data["password"])
 
