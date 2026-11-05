@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
-import { desactivarProducto, editarProducto, listarCategorias, listarProductos } from '../../../services/api';
+import {
+  desactivarProducto,
+  editarProducto,
+  eliminarProducto,
+  listarCategorias,
+  listarProductos,
+} from '../../../services/api';
 import ProductoForm from './ProductoForm';
 import QrProducto from './QrProducto';
-import { gestionaInventario } from '../secciones';
+import { ROL_ADMINISTRADOR, gestionaInventario } from '../secciones';
 
 function formatearNumero(valor) {
   return Number(valor).toLocaleString('es-CL');
@@ -34,6 +40,7 @@ function estadoStock(producto) {
 function Productos({ token, usuarioActual }) {
   // El usuario operativo solo consulta productos; crear, editar y desactivar es del encargado (HU-03).
   const puedeEditar = gestionaInventario(usuarioActual.rol);
+  const puedeEliminar = usuarioActual.rol === ROL_ADMINISTRADOR;
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [buscar, setBuscar] = useState('');
@@ -84,6 +91,17 @@ function Productos({ token, usuarioActual }) {
         await editarProducto(token, producto.id, { activo: true });
       }
       cargarProductos();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function eliminarDefinitivo(producto) {
+    if (!window.confirm(`¿Seguro que quieres eliminar permanentemente ${producto.nombre}? Esta acción no se puede deshacer.`)) return;
+
+    try {
+      await eliminarProducto(token, producto.id);
+      await cargarProductos();
     } catch (err) {
       setError(err.message);
     }
@@ -245,6 +263,11 @@ function Productos({ token, usuarioActual }) {
                           <button className="boton-enlace" onClick={() => cambiarEstado(producto)}>
                             {producto.activo ? 'Desactivar' : 'Reactivar'}
                           </button>
+                          {puedeEliminar && (
+                            <button className="boton-enlace" onClick={() => eliminarDefinitivo(producto)}>
+                              Eliminar
+                            </button>
+                          )}
                         </>
                       )}
                     </td>

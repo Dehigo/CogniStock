@@ -7,6 +7,10 @@ from api.models import AlertaStock, BitacoraAuditoria, EscaneoQR, Movimiento, Pr
 class SalidasQrTests(TestCase):
     @classmethod
     def setUpTestData(cls):
+        cls.administrador = Usuario.objects.create_user(
+            email="admin@cognistock.cl", password="123456", nombre="Administrador",
+            rol=Rol.objects.create(nombre=Rol.ADMINISTRADOR),
+        )
         cls.encargado = Usuario.objects.create_user(
             email="encargado@cognistock.cl", password="clave-segura-123", nombre="Encargado",
             rol=Rol.objects.create(nombre=Rol.ENCARGADO),
@@ -91,3 +95,23 @@ class SalidasQrTests(TestCase):
         self.client.force_authenticate(self.operativo)
         r = self.client.post("/api/productos/", {"codigo": "N-1", "nombre": "Nuevo", "precio_referencia": 1}, format="json")
         self.assertEqual(r.status_code, 403)
+
+    def test_admin_puede_eliminar_producto_definitivamente(self):
+        self.client.force_authenticate(self.administrador)
+        producto_id = self.producto.id
+
+        r = self.client.delete(f"/api/productos/{producto_id}/eliminar/")
+
+        self.assertEqual(r.status_code, 204)
+        self.assertFalse(Producto.objects.filter(id=producto_id).exists())
+
+    def test_admin_no_puede_eliminar_producto_en_uso(self):
+        self.client.force_authenticate(self.administrador)
+        salida = Salida.objects.create(usuario=self.administrador)
+        Movimiento.objects.create(producto=self.producto, usuario=self.administrador, tipo="SALIDA", cantidad=1, salida=salida)
+
+        r = self.client.delete(f"/api/productos/{self.producto.id}/eliminar/")
+
+        self.assertEqual(r.status_code, 409)
+        self.assertEqual(r.data["resultado"], "PRODUCTO_EN_USO")
+        self.assertTrue(Producto.objects.filter(id=self.producto.id).exists())

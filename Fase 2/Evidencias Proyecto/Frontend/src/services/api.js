@@ -13,7 +13,7 @@ async function pedir(ruta, { token, ...opciones } = {}) {
     respuesta = await fetch(`${API_URL}${ruta}`, {
       ...opciones,
       headers: {
-        'Content-Type': 'application/json',
+        ...(opciones.body ? { 'Content-Type': 'application/json' } : {}),
         ...(token && { Authorization: `Token ${token}` }),
       },
     });
@@ -21,12 +21,32 @@ async function pedir(ruta, { token, ...opciones } = {}) {
     throw new Error('No se pudo conectar con el servidor.');
   }
 
-  const datos = respuesta.status === 204 ? null : await respuesta.json();
+  if (respuesta.status === 204) {
+    return null;
+  }
+
+  const tipoContenido = respuesta.headers.get('content-type') || '';
+  let datos = null;
+
+  if (tipoContenido.includes('application/json')) {
+    try {
+      datos = await respuesta.json();
+    } catch {
+      datos = null;
+    }
+  } else {
+    const texto = await respuesta.text();
+    if (texto) {
+      datos = { detail: texto.slice(0, 200) };
+    }
+  }
+
   if (!respuesta.ok) {
     const error = new Error(mensajeDeError(respuesta.status, datos));
     error.status = respuesta.status; // 401 = la sesión ya no es válida
     throw error;
   }
+
   return datos;
 }
 
@@ -107,8 +127,11 @@ export function desactivarProducto(token, id) {
   return pedir(`/productos/${id}/`, { method: 'DELETE', token });
 }
 
-export function listarProveedores(token, filtros = {}) {
-  return pedir(`/proveedores/?${armarFiltros(filtros)}`, { token });
+export function eliminarProducto(token, id) {
+  return pedir(`/productos/${id}/eliminar/`, { method: 'DELETE', token });
+}
+
+export function listarProveedores(token, filtros = {}) {  return pedir(`/proveedores/?${armarFiltros(filtros)}`, { token });
 }
 
 export function crearProveedor(token, datos) {

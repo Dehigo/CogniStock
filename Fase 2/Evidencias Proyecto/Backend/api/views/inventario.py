@@ -1,13 +1,13 @@
 from django.db import transaction
-from django.db.models import F, Q
+from django.db.models import F, Q, ProtectedError
 from rest_framework import status, viewsets
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 
 from api import servicio_inventario
 from api.bitacora import registrar_en_bitacora
 from api.models import CategoriaProducto, Producto, Proveedor, Stock
-from api.permissions import PuedeGestionarInventario, PuedeRegistrarSalidas
+from api.permissions import EsAdministrador, PuedeGestionarInventario, PuedeRegistrarSalidas
 from api.serializers import CategoriaSerializer, ProductoQrSerializer, ProductoSerializer, ProveedorSerializer
 from api.servicio_inventario import Rechazo
 
@@ -128,6 +128,26 @@ class ProductoViewSet(viewsets.ModelViewSet):
         producto.activo = False
         producto.save(update_fields=["activo"])
         registrar_en_bitacora(request, "PRODUCTO_DESACTIVADO", request.user, "productos", producto.id)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=["delete"], url_path="eliminar", permission_classes=[EsAdministrador])
+    def eliminar_definitivo(self, request, pk=None):
+        producto = self.get_object()
+        producto_id = producto.id
+        detalle = {"codigo": producto.codigo, "nombre": producto.nombre, "categoria_id": producto.categoria_id}
+
+        try:
+            producto.delete()
+        except ProtectedError:
+            return Response(
+                {
+                    "detail": "No se puede eliminar el producto porque hay registros relacionados (movimientos, entradas, salidas, cotizaciones, alertas u otros). Desactívalo o elimina primero esos registros.",
+                    "resultado": "PRODUCTO_EN_USO",
+                },
+                status=status.HTTP_409_CONFLICT,
+            )
+
+        registrar_en_bitacora(request, "PRODUCTO_ELIMINADO", request.user, "productos", producto_id, detalle)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
