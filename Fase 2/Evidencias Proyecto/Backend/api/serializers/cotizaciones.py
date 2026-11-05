@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
@@ -62,6 +63,7 @@ class CotizacionSerializer(serializers.ModelSerializer):
             "creado_en",
         ]
         extra_kwargs = {
+            "observaciones": {"max_length": 500},
             "numero": {
                 "validators": [UniqueValidator(Cotizacion.objects.all(), "Ya existe una cotización con este número.")],
             },
@@ -71,6 +73,11 @@ class CotizacionSerializer(serializers.ModelSerializer):
         if not proveedor.activo:
             raise serializers.ValidationError("El proveedor está inactivo.")
         return proveedor
+
+    def validate_fecha(self, fecha):
+        if fecha > timezone.localdate():
+            raise serializers.ValidationError("La fecha de la cotización no puede ser futura.")
+        return fecha
 
     def validate_detalles(self, detalles):
         if not detalles:

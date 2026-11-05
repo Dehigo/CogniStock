@@ -136,6 +136,7 @@ function Entradas({ token }) {
                         type="number"
                         min="0"
                         max={d.cantidad_pendiente}
+                        step="1"
                         value={cantidades[d.producto] ?? 0}
                         onChange={(e) => setCantidades((actuales) => ({ ...actuales, [d.producto]: e.target.value }))}
                         disabled={d.cantidad_pendiente === 0}
@@ -152,6 +153,7 @@ function Entradas({ token }) {
             <input
               value={observaciones}
               onChange={(e) => setObservaciones(e.target.value)}
+              maxLength={500}
               placeholder="Observaciones (guía de despacho, estado de la mercadería...)"
               aria-label="Observaciones"
             />

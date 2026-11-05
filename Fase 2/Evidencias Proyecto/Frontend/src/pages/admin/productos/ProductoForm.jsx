@@ -66,13 +66,13 @@ function ProductoForm({ token, producto, categorias, onGuardar, onCancelar }) {
         <div className="fila-doble">
           <div>
             <label htmlFor="codigo">Código interno</label>
-            <input id="codigo" value={codigo} onChange={(e) => setCodigo(e.target.value)} required />
+            <input id="codigo" value={codigo} onChange={(e) => setCodigo(e.target.value)} maxLength={80} pattern="[A-Za-z0-9._\-]+" title="Solo letras, números, punto, guion o guion bajo, sin espacios" required />
           </div>
           <div>
             <label htmlFor="categoria">Categoría</label>
             <select id="categoria" value={categoria} onChange={(e) => setCategoria(e.target.value)}>
               <option value="">Sin categoría</option>
-              {categorias.map((c) => (
+              {categorias.filter((c) => c.activo || c.id === producto?.categoria).map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.activo ? c.nombre : `${c.nombre} (inactiva)`}
                 </option>
@@ -82,16 +82,18 @@ function ProductoForm({ token, producto, categorias, onGuardar, onCancelar }) {
         </div>
 
         <label htmlFor="nombre">Nombre</label>
-        <input id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+        <input id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={150} required />
 
         <label htmlFor="descripcion">Descripción</label>
-        <textarea id="descripcion" rows="2" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+        <textarea id="descripcion" rows="2" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} maxLength={1000} />
 
         <label htmlFor="codigo-barras">Código de barras</label>
         <input
           id="codigo-barras"
           value={codigoBarras}
           onChange={(e) => setCodigoBarras(e.target.value)}
+          maxLength={255}
+          pattern="[A-Za-z0-9._\-]*" title="Solo letras, números, punto, guion o guion bajo, sin espacios"
           placeholder="El que viene impreso en el envase"
         />
         <p className="ayuda">Si el producto no trae uno, déjalo vacío y se generará un código para imprimir.</p>
@@ -111,6 +113,7 @@ function ProductoForm({ token, producto, categorias, onGuardar, onCancelar }) {
               id="precio"
               type="number"
               min="0"
+              max="2147483647"
               step="1"
               value={precio}
               onChange={(e) => setPrecio(e.target.value)}
@@ -123,6 +126,7 @@ function ProductoForm({ token, producto, categorias, onGuardar, onCancelar }) {
               id="stock-minimo"
               type="number"
               min="0"
+              max="2147483647"
               step="1"
               value={stockMinimo}
               onChange={(e) => setStockMinimo(e.target.value)}

@@ -106,6 +106,7 @@ function CotizacionForm({ token, cotizacion, onGuardar, onCancelar }) {
               value={numero}
               onChange={(e) => setNumero(e.target.value)}
               placeholder="N° de la cotización del proveedor"
+              maxLength={60}
               required
             />
           </div>
@@ -135,7 +136,7 @@ function CotizacionForm({ token, cotizacion, onGuardar, onCancelar }) {
           </div>
           <div>
             <label htmlFor="fecha">Fecha</label>
-            <input id="fecha" type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} required />
+            <input id="fecha" type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} max={hoy()} required />
           </div>
         </div>
 
@@ -164,6 +165,8 @@ function CotizacionForm({ token, cotizacion, onGuardar, onCancelar }) {
             <input
               type="number"
               min="1"
+              max="2147483647"
+              step="1"
               value={fila.cantidad}
               onChange={(e) => cambiarFila(indice, 'cantidad', e.target.value)}
               aria-label="Cantidad"
@@ -172,6 +175,7 @@ function CotizacionForm({ token, cotizacion, onGuardar, onCancelar }) {
             <input
               type="number"
               min="0"
+              max="9999999999.99"
               step="0.01"
               value={fila.precio_unitario}
               onChange={(e) => cambiarFila(indice, 'precio_unitario', e.target.value)}
@@ -198,7 +202,7 @@ function CotizacionForm({ token, cotizacion, onGuardar, onCancelar }) {
         <p className="detalle-total">Total: {formatearMonto(total, codigoMoneda)}</p>
 
         <label htmlFor="observaciones">Observaciones</label>
-        <textarea id="observaciones" rows="2" value={observaciones} onChange={(e) => setObservaciones(e.target.value)} />
+        <textarea id="observaciones" rows="2" value={observaciones} onChange={(e) => setObservaciones(e.target.value)} maxLength={500} />
 
         {error && <p className="error">{error}</p>}
 

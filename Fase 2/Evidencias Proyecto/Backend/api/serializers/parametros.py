@@ -1,3 +1,5 @@
+import re
+
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
@@ -17,3 +19,8 @@ class ParametroSerializer(serializers.ModelSerializer):
                 ],
             },
         }
+
+    def validate_clave(self, clave):
+        if not re.fullmatch(r"[a-z][a-z0-9_]*", clave):
+            raise serializers.ValidationError("Usa minúsculas, números y guion bajo, empezando por una letra (ej.: dias_cobertura).")
+        return clave
