@@ -166,7 +166,7 @@ function SalidasQR({ token }) {
           className="boton boton-secundario" 
           onClick={() => setMostrarCamara(!mostrarCamara)}
         >
-          {mostrarCamara ? 'Cerrar Cámara' : '📷 Usar Cámara'}
+          {mostrarCamara ? 'Cerrar Cámara' : '📷 Usar Cámara / Subir QR'}
         </button>
       </form>
 
@@ -178,10 +178,12 @@ function SalidasQR({ token }) {
           padding: '16px', 
           borderRadius: '12px',
           boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
-          color: '#f8fafc'
+          color: '#f8fafc',
+          maxWidth: '500px',
+          margin: '0 auto 16px auto'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <p style={{ margin: 0, fontWeight: '600', fontSize: '0.95rem' }}>📷 Escanea el código QR del producto</p>
+            <p style={{ margin: 0, fontWeight: '600', fontSize: '0.95rem' }}>📷 Escanea o sube un código QR</p>
             <button 
               type="button" 
               className="boton boton-secundario" 
@@ -196,7 +198,8 @@ function SalidasQR({ token }) {
             overflow: 'hidden', 
             borderRadius: '8px', 
             background: '#0f172a',
-            border: '1px solid #334155'
+            border: '1px solid #334155',
+            padding: '8px'
           }}>
             <QrScanner onScanSuccess={handleScanSuccess} />
           </div>
