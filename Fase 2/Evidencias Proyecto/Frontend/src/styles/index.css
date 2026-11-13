@@ -1,4 +1,18 @@
 :root {
+  --cs-primary: #6546D7;
+  --cs-primary-hover: #5335C0;
+  --cs-sidebar: #171B36;
+  --cs-background: #F5F5FA;
+  --cs-surface: #FFFFFF;
+  --cs-accent: #F5C542;
+  --cs-accent-hover: #E6B52E;
+  --cs-text-primary: #26334D;
+  --cs-text-secondary: #667085;
+  --cs-border: #E4E5EF;
+  --cs-success: #16A34A;
+  --cs-danger: #DC2626;
+  --cs-warning: #EAB308;
+
   font-family: Inter, 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -6,8 +20,8 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #e2e8f0;
-  background: #0f172a;
+  color: var(--cs-text-primary);
+  background: var(--cs-background);
 }
 
 * {
@@ -22,7 +36,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #0f172a;
+  background: var(--cs-background);
+  color: var(--cs-text-primary);
 }
 
 button,

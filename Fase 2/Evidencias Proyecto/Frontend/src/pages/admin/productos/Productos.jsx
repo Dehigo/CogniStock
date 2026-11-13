@@ -142,12 +142,12 @@ function Productos({ token, usuarioActual }) {
           <span className="tarjeta-resumen-numero">{resumen.total}</span>
           <span className="tarjeta-resumen-subtitulo">Productos registrados</span>
         </div>
-        <div className="tarjeta-resumen tarjeta-resumen-gris">
+        <div className="tarjeta-resumen tarjeta-resumen-verde">
           <span className="tarjeta-resumen-titulo">Activos</span>
           <span className="tarjeta-resumen-numero">{resumen.activos}</span>
           <span className="tarjeta-resumen-subtitulo">Disponibles en operación</span>
         </div>
-        <div className="tarjeta-resumen tarjeta-resumen-gris">
+        <div className="tarjeta-resumen tarjeta-resumen-rojo">
           <span className="tarjeta-resumen-titulo">Stock bajo</span>
           <span className="tarjeta-resumen-numero">{resumen.bajo}</span>
           <span className="tarjeta-resumen-subtitulo">Requieren atención</span>

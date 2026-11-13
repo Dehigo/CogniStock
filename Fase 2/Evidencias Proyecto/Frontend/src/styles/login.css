@@ -3,6 +3,8 @@
   display: grid;
   place-items: center;
   padding: 16px;
+  background: radial-gradient(circle at top left, rgba(101, 70, 215, 0.08), transparent 28%),
+    linear-gradient(180deg, #f5f5fa 0%, #f2f3f8 100%);
 }
 
 .tarjeta {
@@ -10,8 +12,9 @@
   max-width: 380px;
   padding: 32px;
   border-radius: 16px;
-  background: #1e293b;
-  border: 1px solid rgba(148, 163, 184, 0.15);
+  background: var(--cs-surface);
+  border: 1px solid var(--cs-border);
+  box-shadow: 0 20px 45px rgba(38, 51, 77, 0.08);
   display: flex;
   flex-direction: column;
 }
@@ -19,43 +22,46 @@
 .tarjeta h1 {
   margin-bottom: 4px;
   font-size: 1.6rem;
+  color: var(--cs-text-primary);
 }
 
 .subtitulo {
   margin-bottom: 24px;
-  color: #94a3b8;
+  color: var(--cs-text-secondary);
 }
 
 .tarjeta label {
   margin-bottom: 6px;
   font-size: 0.9rem;
-  color: #cbd5e1;
+  color: var(--cs-text-primary);
 }
 
 .tarjeta input {
   margin-bottom: 16px;
   padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid #334155;
-  background: #0f172a;
-  color: inherit;
+  border-radius: 10px;
+  border: 1px solid var(--cs-border);
+  background: #fff;
+  color: var(--cs-text-primary);
   font: inherit;
 }
 
 .tarjeta input:focus {
-  outline: 2px solid #38bdf8;
-  outline-offset: 1px;
+  outline: none;
+  border-color: rgba(101, 70, 215, 0.4);
+  box-shadow: 0 0 0 4px rgba(101, 70, 215, 0.08);
 }
 
 .tarjeta button {
   margin-top: 8px;
   padding: 10px;
   border: none;
-  border-radius: 8px;
-  background: #0ea5e9;
-  color: #fff;
-  font-weight: 600;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--cs-accent), var(--cs-accent-hover));
+  color: var(--cs-text-primary);
+  font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 12px 22px rgba(245, 197, 66, 0.2);
 }
 
 .tarjeta button:disabled {
@@ -67,8 +73,8 @@
   margin-bottom: 8px;
   padding: 10px 12px;
   border-radius: 8px;
-  background: rgba(239, 68, 68, 0.15);
-  color: #fca5a5;
+  background: rgba(220, 38, 38, 0.08);
+  color: var(--cs-danger);
   font-size: 0.9rem;
 }
 
@@ -80,9 +86,10 @@
 }
 
 .tarjeta dt {
-  color: #94a3b8;
+  color: var(--cs-text-secondary);
 }
 
 .tarjeta dd {
   margin: 0;
+  color: var(--cs-text-primary);
 }
