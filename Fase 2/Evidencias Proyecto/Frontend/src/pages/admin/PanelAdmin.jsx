@@ -83,7 +83,7 @@ function PanelAdmin({ token, usuario, onLogout }) {
   const Pantalla = PANTALLAS[seccion.id];
 
   return (
-    <div className="panel">
+    <div className="panel panel-rol panel-rol-compartido">
       <header className="panel-cabecera">
         <div className="panel-cabecera-izq">
           <button

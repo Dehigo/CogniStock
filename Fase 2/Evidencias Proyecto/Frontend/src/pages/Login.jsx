@@ -23,8 +23,18 @@ function Login({ onLogin }) {
   }
 
   return (
-    <form className="tarjeta" onSubmit={handleSubmit}>
-      <h1>CogniStock</h1>
+    <section className="login-layout">
+      <div className="login-presentacion" aria-hidden="true">
+        <span className="login-presentacion-etiqueta">Gestión inteligente</span>
+        <h2>Controla tu inventario con claridad</h2>
+      </div>
+
+      <form className="login-tarjeta" onSubmit={handleSubmit}>
+      <div className="login-marca">
+        <span className="login-marca-icono" aria-hidden="true">CS</span>
+        <span>CogniStock</span>
+      </div>
+      <h1>Bienvenido</h1>
       <p className="subtitulo">Inicia sesión para continuar</p>
 
       <label htmlFor="email">Email o usuario</label>
@@ -53,7 +63,8 @@ function Login({ onLogin }) {
       <button type="submit" disabled={cargando}>
         {cargando ? 'Ingresando...' : 'Ingresar'}
       </button>
-    </form>
+      </form>
+    </section>
   );
 }
 

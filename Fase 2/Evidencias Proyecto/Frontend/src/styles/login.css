@@ -1,60 +1,155 @@
 .contenedor {
+  position: relative;
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 16px;
-  background: radial-gradient(circle at top left, rgba(101, 70, 215, 0.08), transparent 28%),
-    linear-gradient(180deg, #f5f5fa 0%, #f2f3f8 100%);
+  padding: clamp(20px, 4vw, 56px);
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    linear-gradient(90deg, rgba(15, 23, 42, 0.42), rgba(15, 23, 42, 0.08)),
+    url('../assets/CogniStock%20Warehouse.png') center / cover no-repeat;
+}
+
+.contenedor::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -18px;
+  background:
+    linear-gradient(90deg, rgba(15, 23, 42, 0.28), rgba(15, 23, 42, 0.04)),
+    url('../assets/CogniStock%20Warehouse.png') center / cover no-repeat;
+  filter: blur(4px);
+  transform: scale(1.035);
+}
+
+.contenedor::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: radial-gradient(circle at 28% 48%, rgba(101, 70, 215, 0.16), transparent 34%);
+}
+
+.login-layout {
+  width: min(1120px, 100%);
+  min-height: min(680px, calc(100vh - 64px));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(330px, 420px);
+  align-items: center;
+  gap: clamp(28px, 6vw, 72px);
+}
+
+.login-presentacion {
+  max-width: 520px;
+  color: #fff;
+  text-shadow: 0 3px 18px rgba(15, 23, 42, 0.45);
+}
+
+.login-presentacion-etiqueta {
+  display: inline-flex;
+  margin-bottom: 14px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.25);
+  backdrop-filter: blur(10px);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.login-presentacion h2 {
+  margin: 0;
+  font-size: clamp(2.4rem, 5vw, 4.8rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
 }
 
 .tarjeta {
   width: 100%;
-  max-width: 380px;
-  padding: 32px;
-  border-radius: 16px;
-  background: var(--cs-surface);
-  border: 1px solid var(--cs-border);
-  box-shadow: 0 20px 45px rgba(38, 51, 77, 0.08);
+  max-width: 420px;
+  justify-self: end;
+  padding: 38px;
+  border-radius: 22px;
+  background: rgba(20, 28, 54, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+  backdrop-filter: blur(18px);
   display: flex;
   flex-direction: column;
 }
 
-.tarjeta h1 {
+.login-marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  color: var(--cs-primary);
+  font-weight: 900;
+}
+
+.login-marca-icono {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--cs-primary);
+  color: #fff;
+  font-size: 0.78rem;
+  letter-spacing: -0.04em;
+}
+
+.login-tarjeta h1 {
   margin-bottom: 4px;
   font-size: 1.6rem;
-  color: var(--cs-text-primary);
+  color: #FFFFFF;
 }
 
-.subtitulo {
+.login-tarjeta .subtitulo {
   margin-bottom: 24px;
-  color: var(--cs-text-secondary);
+  color: #CBD5E1;
 }
 
-.tarjeta label {
+.login-tarjeta label {
   margin-bottom: 6px;
   font-size: 0.9rem;
-  color: var(--cs-text-primary);
+  font-weight: 800;
+  color: #FFFFFF;
+  text-shadow: 0 1px 8px rgba(15, 23, 42, 0.55);
 }
 
-.tarjeta input {
+.login-tarjeta input {
+  width: 100%;
+  min-height: 48px;
   margin-bottom: 16px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--cs-border);
-  background: #fff;
-  color: var(--cs-text-primary);
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  background: rgba(15, 23, 42, 0.38);
+  color: #FFFFFF;
   font: inherit;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-.tarjeta input:focus {
+.login-tarjeta input::placeholder {
+  color: #DCE4F0;
+}
+
+.login-tarjeta input:focus {
   outline: none;
-  border-color: rgba(101, 70, 215, 0.4);
-  box-shadow: 0 0 0 4px rgba(101, 70, 215, 0.08);
+  border-color: rgba(245, 197, 66, 0.82);
+  background: rgba(15, 23, 42, 0.52);
+  box-shadow: 0 0 0 4px rgba(101, 70, 215, 0.12);
 }
 
-.tarjeta button {
+.login-tarjeta button {
+  min-height: 48px;
   margin-top: 8px;
-  padding: 10px;
+  padding: 12px;
   border: none;
   border-radius: 10px;
   background: linear-gradient(135deg, var(--cs-accent), var(--cs-accent-hover));
@@ -64,7 +159,7 @@
   box-shadow: 0 12px 22px rgba(245, 197, 66, 0.2);
 }
 
-.tarjeta button:disabled {
+.login-tarjeta button:disabled {
   opacity: 0.6;
   cursor: wait;
 }
@@ -92,4 +187,29 @@
 .tarjeta dd {
   margin: 0;
   color: var(--cs-text-primary);
+}
+
+@media (max-width: 760px) {
+  .contenedor {
+    padding: 16px;
+  }
+
+  .login-layout {
+    min-height: calc(100vh - 32px);
+    grid-template-columns: 1fr;
+  }
+
+  .login-presentacion {
+    display: none;
+  }
+
+  .login-tarjeta {
+    max-width: 420px;
+    justify-self: center;
+    padding: 28px 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contenedor::before { transform: none; }
 }
