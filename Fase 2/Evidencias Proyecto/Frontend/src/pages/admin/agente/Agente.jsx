@@ -122,7 +122,7 @@ function Agente({ token, usuarioActual }) {
 
       {puedeRevisar && (
         <>
-          <h3>Propuestas de reposición pendientes</h3>
+          <h3 className="seccion-subtitulo">Propuestas de reposición pendientes</h3>
           <div className="tabla-contenedor">
             <table className="tabla">
               <thead>
@@ -164,5 +164,4 @@ function Agente({ token, usuarioActual }) {
     </section>
   );
 }
-
 export default Agente;

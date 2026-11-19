@@ -3,12 +3,19 @@ import { Html5Qrcode } from 'html5-qrcode';
 
 export default function QrScanner({ onScanSuccess }) {
     const scannerRef = useRef(null);
-    const fileInputRef = useRef(null);
+    const alEscanearRef = useRef(onScanSuccess);
     const [errorMsg, setErrorMsg] = useState('');
 
     const uniqueId = useId().replace(/:/g, "-");
     const containerId = `reader-${uniqueId}`;
     const fileContainerId = `reader-file-${uniqueId}`;
+    const fileInputId = `qr-file-input-${uniqueId}`;
+
+    // La función que llega por props cambia en cada render del padre.
+    // Se guarda en una ref para no reiniciar la cámara cada vez que eso ocurre.
+    useEffect(() => {
+        alEscanearRef.current = onScanSuccess;
+    }, [onScanSuccess]);
 
     useEffect(() => {
         let isMounted = true;
@@ -18,11 +25,11 @@ export default function QrScanner({ onScanSuccess }) {
         const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
         html5QrCode.start(
-            { facingMode: "environment" }, 
+            { facingMode: "environment" },
             config,
             (decodedText) => {
                 if (isMounted) {
-                    onScanSuccess(decodedText);
+                    alEscanearRef.current(decodedText);
                     setErrorMsg('');
                 }
             },
@@ -46,7 +53,7 @@ export default function QrScanner({ onScanSuccess }) {
                 }
             }
         };
-    }, [onScanSuccess, containerId]);
+    }, [containerId]);
 
     const handleFileUpload = async (event) => {
         const file = event.target.files?.[0];
@@ -56,7 +63,7 @@ export default function QrScanner({ onScanSuccess }) {
 
         try {
             const decodedText = await html5QrCodeFile.scanFile(file, true);
-            onScanSuccess(decodedText);
+            alEscanearRef.current(decodedText);
             setErrorMsg('');
         } catch (err) {
             console.error("Error al escanear el archivo QR:", err);
@@ -70,30 +77,22 @@ export default function QrScanner({ onScanSuccess }) {
     };
 
     return (
-        <div className="w-full flex flex-col items-center gap-3">
+        <div className="qr-scanner">
             <div id={containerId} style={{ width: '100%' }}></div>
             <div id={fileContainerId} style={{ display: 'none' }}></div>
 
-            {errorMsg && (
-                <p className="text-red-400 text-sm text-center">{errorMsg}</p>
-            )}
+            {errorMsg && <p className="qr-scanner-error">{errorMsg}</p>}
 
-            <div className="w-full flex justify-center mt-2">
-                <label 
-                    htmlFor={`qr-file-input-${uniqueId}`}
-                    className="cursor-pointer bg-slate-700 hover:bg-slate-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all flex items-center gap-2 text-sm"
-                >
-                    <span>📁 Subir imagen de QR</span>
-                </label>
-                <input 
-                    id={`qr-file-input-${uniqueId}`}
-                    ref={fileInputRef}
-                    type="file" 
-                    accept="image/*" 
-                    className="hidden" 
-                    onChange={handleFileUpload}
-                />
-            </div>
+            <label htmlFor={fileInputId} className="boton boton-secundario qr-scanner-subir">
+                Subir imagen de QR
+            </label>
+            <input
+                id={fileInputId}
+                type="file"
+                accept="image/*"
+                className="qr-scanner-oculto"
+                onChange={handleFileUpload}
+            />
         </div>
     );
 }

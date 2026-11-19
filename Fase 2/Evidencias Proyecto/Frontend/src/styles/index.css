@@ -1,19 +1,33 @@
-:root {
-  --cs-primary: #6546D7;
-  --cs-primary-hover: #5335C0;
-  --cs-sidebar: #171B36;
-  --cs-background: #F5F5FA;
-  --cs-surface: #FFFFFF;
-  --cs-accent: #F5C542;
-  --cs-accent-hover: #E6B52E;
-  --cs-text-primary: #1F2937;
-  --cs-text-secondary: #526071;
-  --cs-border: #E4E5EF;
-  --cs-success: #16A34A;
-  --cs-danger: #DC2626;
-  --cs-warning: #EAB308;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
-  font-family: Inter, 'Segoe UI', sans-serif;
+:root {
+  /* Color de marca: un solo primario azul */
+  --cs-primary: #2563EB;
+  --cs-primary-hover: #1D4ED8;
+  --cs-primary-soft: #EFF4FF;
+  --cs-primary-border: #C7D7FE;
+
+  /* Estructura */
+  --cs-sidebar: #FFFFFF;
+  --cs-background: #F6F7F9;
+  --cs-surface: #FFFFFF;
+  --cs-border: #E3E6EC;
+
+  /* Texto */
+  --cs-text-primary: #1F2937;
+  --cs-text-secondary: #5B6677;
+
+  /* Estados (solo para significar algo) */
+  --cs-success: #15803D;
+  --cs-danger: #B91C1C;
+  --cs-warning: #B45309;
+
+  /* Compatibilidad: antes era el amarillo, ahora usa el primario */
+  --cs-accent: var(--cs-primary);
+  --cs-accent-hover: var(--cs-primary-hover);
+
+  font-family: Inter, 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
   line-height: 1.5;
   font-weight: 400;
   font-synthesis: none;
@@ -32,6 +46,12 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   margin: 0;
   min-width: 320px;
@@ -41,6 +61,9 @@ body {
 }
 
 button,
+input,
+select,
+textarea,
 a {
   font: inherit;
 }
@@ -52,6 +75,24 @@ a {
 h1,
 h2,
 h3,
+h4,
 p {
   margin-top: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+a {
+  color: var(--cs-primary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--cs-primary);
+  outline-offset: 2px;
 }

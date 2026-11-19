@@ -2,6 +2,44 @@ import { useEffect, useState } from 'react';
 import { desactivarCategoria, editarCategoria, listarCategorias } from '../../../services/api';
 import CategoriaForm from './CategoriaForm';
 
+// Íconos simples para las tarjetas de resumen
+function Icono({ children }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  );
+}
+
+const ICONO_TOTAL = (
+  <Icono>
+    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+    <line x1="7" y1="7" x2="7.01" y2="7" />
+  </Icono>
+);
+
+const ICONO_ACTIVAS = (
+  <Icono>
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+    <polyline points="22 4 12 14.01 9 11.01" />
+  </Icono>
+);
+
+const ICONO_INACTIVAS = (
+  <Icono>
+    <circle cx="12" cy="12" r="10" />
+    <line x1="8" y1="12" x2="16" y2="12" />
+  </Icono>
+);
+
 function Categorias({ token }) {
   const [categorias, setCategorias] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -58,20 +96,35 @@ function Categorias({ token }) {
       </div>
 
       <div className="resumen-grid">
-        <div className="tarjeta-resumen">
-          <span className="tarjeta-resumen-titulo">Total</span>
-          <strong className="tarjeta-resumen-numero">{categorias.length}</strong>
-          <small className="tarjeta-resumen-subtitulo">categorías creadas</small>
-        </div>
         <div className="tarjeta-resumen tarjeta-resumen-azul">
-          <span className="tarjeta-resumen-titulo">Activas</span>
-          <strong className="tarjeta-resumen-numero">{categoriasActivas}</strong>
-          <small className="tarjeta-resumen-subtitulo">disponibles para uso</small>
+          <div className="tarjeta-resumen-header">
+            <span className="tarjeta-resumen-icon">{ICONO_TOTAL}</span>
+            <span className="tarjeta-resumen-titulo">Total</span>
+          </div>
+          <div className="tarjeta-resumen-body">
+            <strong className="tarjeta-resumen-numero">{categorias.length}</strong>
+            <small className="tarjeta-resumen-subtitulo">categorías creadas</small>
+          </div>
+        </div>
+        <div className="tarjeta-resumen tarjeta-resumen-verde">
+          <div className="tarjeta-resumen-header">
+            <span className="tarjeta-resumen-icon">{ICONO_ACTIVAS}</span>
+            <span className="tarjeta-resumen-titulo">Activas</span>
+          </div>
+          <div className="tarjeta-resumen-body">
+            <strong className="tarjeta-resumen-numero">{categoriasActivas}</strong>
+            <small className="tarjeta-resumen-subtitulo">disponibles para uso</small>
+          </div>
         </div>
         <div className="tarjeta-resumen tarjeta-resumen-gris">
-          <span className="tarjeta-resumen-titulo">Inactivas</span>
-          <strong className="tarjeta-resumen-numero">{categoriasInactivas}</strong>
-          <small className="tarjeta-resumen-subtitulo">ocultas temporalmente</small>
+          <div className="tarjeta-resumen-header">
+            <span className="tarjeta-resumen-icon">{ICONO_INACTIVAS}</span>
+            <span className="tarjeta-resumen-titulo">Inactivas</span>
+          </div>
+          <div className="tarjeta-resumen-body">
+            <strong className="tarjeta-resumen-numero">{categoriasInactivas}</strong>
+            <small className="tarjeta-resumen-subtitulo">ocultas temporalmente</small>
+          </div>
         </div>
       </div>
 

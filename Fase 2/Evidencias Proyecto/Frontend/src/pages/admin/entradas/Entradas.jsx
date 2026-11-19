@@ -164,7 +164,7 @@ function Entradas({ token }) {
         </form>
       )}
 
-      <h3>Últimas entradas</h3>
+      <h3 className="seccion-subtitulo">Últimas entradas</h3>
       <div className="tabla-contenedor">
         <table className="tabla">
           <thead>
@@ -205,5 +205,4 @@ function Entradas({ token }) {
     </section>
   );
 }
-
 export default Entradas;

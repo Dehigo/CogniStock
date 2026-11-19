@@ -77,8 +77,8 @@ function SalidasQR({ token }) {
 
   async function handleScanSuccess(decodedText) {
     setCodigoQr(decodedText);
-    setMostrarCamara(false); 
-    
+    setMostrarCamara(false);
+
     const codigo = decodedText.trim();
     setCargando(true);
     setError('');
@@ -147,7 +147,7 @@ function SalidasQR({ token }) {
         <span className="insignia insignia-base">RF-08 / HU-04</span>
       </div>
 
-      <form onSubmit={buscarProducto} className="filtros filtros-acciones salidas-busqueda" style={{ marginBottom: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+      <form onSubmit={buscarProducto} className="filtros filtros-acciones salidas-busqueda">
         <input
           type="text"
           value={codigoQr}
@@ -156,51 +156,29 @@ function SalidasQR({ token }) {
           placeholder="Escanea o escribe el código QR"
           aria-label="Código QR del producto"
           className="input-qr"
-          style={{ flex: 1, minWidth: '200px' }}
         />
         <button type="submit" className="boton" disabled={cargando}>
           {cargando ? 'Buscando...' : 'Buscar producto'}
         </button>
-        <button 
-          type="button" 
-          className="boton boton-secundario" 
+        <button
+          type="button"
+          className="boton boton-secundario"
           onClick={() => setMostrarCamara(!mostrarCamara)}
         >
-          {mostrarCamara ? 'Cerrar Cámara' : '📷 Usar Cámara / Subir QR'}
+          {mostrarCamara ? 'Cerrar cámara' : 'Usar cámara o subir QR'}
         </button>
       </form>
 
       {mostrarCamara && (
-        <div style={{ 
-          marginBottom: '16px', 
-          background: '#1e293b', 
-          border: '1px solid #334155',
-          padding: '16px', 
-          borderRadius: '12px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
-          color: '#f8fafc',
-          maxWidth: '500px',
-          margin: '0 auto 16px auto'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <p style={{ margin: 0, fontWeight: '600', fontSize: '0.95rem' }}>📷 Escanea o sube un código QR</p>
-            <button 
-              type="button" 
-              className="boton boton-secundario" 
-              style={{ padding: '4px 10px', fontSize: '0.85rem' }}
-              onClick={() => setMostrarCamara(false)}
-            >
-              ✕ Cerrar
+        <div className="camara-panel">
+          <div className="camara-panel-cabecera">
+            <p>Escanea o sube un código QR</p>
+            <button type="button" className="boton boton-secundario" onClick={() => setMostrarCamara(false)}>
+              Cerrar
             </button>
           </div>
-          
-          <div style={{ 
-            overflow: 'hidden', 
-            borderRadius: '8px', 
-            background: '#0f172a',
-            border: '1px solid #334155',
-            padding: '8px'
-          }}>
+
+          <div className="camara-visor">
             <QrScanner onScanSuccess={handleScanSuccess} />
           </div>
         </div>
@@ -210,7 +188,7 @@ function SalidasQR({ token }) {
       {mensaje && <p className="success">{mensaje}</p>}
 
       {producto && (
-        <div className="tarjeta-resumen tarjeta-resumen-azul salidas-producto-card" style={{ marginTop: '16px' }}>
+        <div className="tarjeta-resumen salidas-producto-card" style={{ marginTop: '16px' }}>
           <span className="tarjeta-resumen-titulo">Producto identificado</span>
           <div className="fila-doble salidas-data" style={{ marginTop: '12px' }}>
             <div className="salidas-data-item">
@@ -251,7 +229,13 @@ function SalidasQR({ token }) {
               </div>
               <div className="salidas-field">
                 <label htmlFor="stock-disp">Stock disponible</label>
-                <input id="stock-disp" type="text" value={formatearUnidades(Number(producto.stock_actual ?? 0))} readOnly className="input-premium input-readonly" />
+                <input
+                  id="stock-disp"
+                  type="text"
+                  value={formatearUnidades(Number(producto.stock_actual ?? 0))}
+                  readOnly
+                  className="input-premium input-readonly"
+                />
               </div>
             </div>
 

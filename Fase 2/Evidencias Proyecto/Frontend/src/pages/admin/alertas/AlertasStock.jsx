@@ -50,10 +50,14 @@ function AlertasStock({ token }) {
             {!cargando &&
               productos.map((producto) => (
                 <tr key={producto.id}>
-                  <td className="sin-salto">{producto.codigo}</td>
+                  <td className="sin-salto">
+                    <span className="codigo-producto">{producto.codigo}</span>
+                  </td>
                   <td>{producto.nombre}</td>
                   <td>{producto.categoria_nombre ?? 'Sin categoría'}</td>
-                  <td className="sin-salto stock-bajo">{producto.stock_actual}</td>
+                  <td className="sin-salto">
+                    <span className="stock-insignia stock-bajo">{producto.stock_actual}</span>
+                  </td>
                   <td className="sin-salto">{producto.stock_minimo}</td>
                   <td className="sin-salto">{producto.stock_minimo - producto.stock_actual}</td>
                 </tr>

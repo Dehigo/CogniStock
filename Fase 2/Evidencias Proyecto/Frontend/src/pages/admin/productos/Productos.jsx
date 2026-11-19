@@ -37,6 +37,46 @@ function estadoStock(producto) {
   return { etiqueta: 'Disponible', clase: 'stock-disponible' };
 }
 
+// Íconos simples para las tarjetas de resumen
+function Icono({ children }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  );
+}
+
+const ICONO_PRODUCTOS = (
+  <Icono>
+    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+    <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+    <line x1="12" y1="22.08" x2="12" y2="12" />
+  </Icono>
+);
+
+const ICONO_ACTIVOS = (
+  <Icono>
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+    <polyline points="22 4 12 14.01 9 11.01" />
+  </Icono>
+);
+
+const ICONO_ALERTA = (
+  <Icono>
+    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+    <line x1="12" y1="9" x2="12" y2="13" />
+    <line x1="12" y1="17" x2="12.01" y2="17" />
+  </Icono>
+);
+
 function Productos({ token, usuarioActual }) {
   // El usuario operativo solo consulta productos; crear, editar y desactivar es del encargado (HU-03).
   const puedeEditar = gestionaInventario(usuarioActual.rol);
@@ -136,21 +176,36 @@ function Productos({ token, usuarioActual }) {
         )}
       </div>
 
-      <div className="resumen-grid" style={{ marginBottom: '18px' }}>
+      <div className="resumen-grid">
         <div className="tarjeta-resumen tarjeta-resumen-azul">
-          <span className="tarjeta-resumen-titulo">Total</span>
-          <span className="tarjeta-resumen-numero">{resumen.total}</span>
-          <span className="tarjeta-resumen-subtitulo">Productos registrados</span>
+          <div className="tarjeta-resumen-header">
+            <span className="tarjeta-resumen-icon">{ICONO_PRODUCTOS}</span>
+            <span className="tarjeta-resumen-titulo">Total</span>
+          </div>
+          <div className="tarjeta-resumen-body">
+            <span className="tarjeta-resumen-numero">{resumen.total}</span>
+            <span className="tarjeta-resumen-subtitulo">Productos registrados</span>
+          </div>
         </div>
         <div className="tarjeta-resumen tarjeta-resumen-verde">
-          <span className="tarjeta-resumen-titulo">Activos</span>
-          <span className="tarjeta-resumen-numero">{resumen.activos}</span>
-          <span className="tarjeta-resumen-subtitulo">Disponibles en operación</span>
+          <div className="tarjeta-resumen-header">
+            <span className="tarjeta-resumen-icon">{ICONO_ACTIVOS}</span>
+            <span className="tarjeta-resumen-titulo">Activos</span>
+          </div>
+          <div className="tarjeta-resumen-body">
+            <span className="tarjeta-resumen-numero">{resumen.activos}</span>
+            <span className="tarjeta-resumen-subtitulo">Disponibles en operación</span>
+          </div>
         </div>
         <div className="tarjeta-resumen tarjeta-resumen-rojo">
-          <span className="tarjeta-resumen-titulo">Stock bajo</span>
-          <span className="tarjeta-resumen-numero">{resumen.bajo}</span>
-          <span className="tarjeta-resumen-subtitulo">Requieren atención</span>
+          <div className="tarjeta-resumen-header">
+            <span className="tarjeta-resumen-icon">{ICONO_ALERTA}</span>
+            <span className="tarjeta-resumen-titulo">Stock bajo</span>
+          </div>
+          <div className="tarjeta-resumen-body">
+            <span className="tarjeta-resumen-numero">{resumen.bajo}</span>
+            <span className="tarjeta-resumen-subtitulo">Requieren atención</span>
+          </div>
         </div>
       </div>
 
@@ -158,10 +213,11 @@ function Productos({ token, usuarioActual }) {
         <input
           type="search"
           placeholder="Buscar por nombre o código"
+          aria-label="Buscar productos"
           value={buscar}
           onChange={(e) => setBuscar(e.target.value)}
         />
-        <select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
+        <select value={categoria} onChange={(e) => setCategoria(e.target.value)} aria-label="Categoría">
           <option value="">Todas las categorías</option>
           {categorias.map((c) => (
             <option key={c.id} value={c.id}>
@@ -169,8 +225,8 @@ function Productos({ token, usuarioActual }) {
             </option>
           ))}
         </select>
-        <select value={estado} onChange={(e) => setEstado(e.target.value)}>
-          <option value="">Todos</option>
+        <select value={estado} onChange={(e) => setEstado(e.target.value)} aria-label="Estado">
+          <option value="">Todos los estados</option>
           <option value="true">Activos</option>
           <option value="false">Inactivos</option>
         </select>
@@ -197,7 +253,6 @@ function Productos({ token, usuarioActual }) {
               <th>Categoría</th>
               <th>Unidad</th>
               <th>Stock</th>
-              <th>Stock mínimo</th>
               <th>Precio ref.</th>
               <th>Estado</th>
               <th></th>
@@ -206,13 +261,13 @@ function Productos({ token, usuarioActual }) {
           <tbody>
             {cargando && (
               <tr>
-                <td colSpan="9" className="tabla-mensaje">Cargando productos...</td>
+                <td colSpan="8" className="tabla-mensaje">Cargando productos...</td>
               </tr>
             )}
 
             {!cargando && productos.length === 0 && (
               <tr>
-                <td colSpan="9" className="tabla-mensaje">No se encontraron productos.</td>
+                <td colSpan="8" className="tabla-mensaje">No se encontraron productos.</td>
               </tr>
             )}
 
@@ -223,24 +278,19 @@ function Productos({ token, usuarioActual }) {
                 const filaInactiva = !producto.activo ? 'fila-inactiva' : '';
                 return (
                   <tr key={producto.id} className={filaInactiva}>
-                    <td className="sin-salto">{producto.codigo}</td>
-                    <td>{producto.nombre}</td>
-                    <td>{producto.categoria_nombre ?? 'Sin categoría'}</td>
-                    <td className="sin-salto">{producto.unidad_medida ?? 'unidad'}</td>
-                    <td className="sin-salto">
-                      <span className={`stock-insignia ${valorEstado.clase}`}>
-                        {formatearUnidades(stock)}
-                      </span>
+                    <td data-label="Código" className="sin-salto">
+                      <span className="codigo-producto">{producto.codigo}</span>
                     </td>
-                    <td className="sin-salto">{formatearNumero(producto.stock_minimo ?? 0)}</td>
-                    <td className="sin-salto">${formatearNumero(producto.precio_referencia)}</td>
-                    <td className="sin-salto">
-                      <span className={`estado ${producto.activo ? 'estado-activo' : 'estado-inactivo'}`}>
-                        {producto.activo ? 'Activo' : 'Inactivo'}
-                      </span>
-                      <span className={`stock-insignia ${valorEstado.clase} stock-insignia-inline`}>
-                        {valorEstado.etiqueta}
-                      </span>
+                    <td data-label="Nombre">{producto.nombre}</td>
+                    <td data-label="Categoría">{producto.categoria_nombre ?? 'Sin categoría'}</td>
+                    <td data-label="Unidad" className="sin-salto">{producto.unidad_medida ?? 'unidad'}</td>
+                    <td data-label="Stock" className="sin-salto">
+                      {formatearUnidades(stock)}
+                      <span className="celda-secundaria">Mínimo {formatearNumero(producto.stock_minimo ?? 0)}</span>
+                    </td>
+                    <td data-label="Precio ref." className="sin-salto">${formatearNumero(producto.precio_referencia)}</td>
+                    <td data-label="Estado" className="sin-salto">
+                      <span className={`stock-insignia ${valorEstado.clase}`}>{valorEstado.etiqueta}</span>
                     </td>
                     <td className="tabla-acciones">
                       <button className="boton-enlace" onClick={() => setProductoQr(producto)}>
@@ -264,7 +314,7 @@ function Productos({ token, usuarioActual }) {
                             {producto.activo ? 'Desactivar' : 'Reactivar'}
                           </button>
                           {puedeEliminar && (
-                            <button className="boton-enlace" onClick={() => eliminarDefinitivo(producto)}>
+                            <button className="boton-enlace boton-enlace-peligro" onClick={() => eliminarDefinitivo(producto)}>
                               Eliminar
                             </button>
                           )}
